@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Vibaz Robótica — Catálogo</title>
 
+<link rel="icon" href="imagens/favicon.svg?v=5" type="image/svg+xml">
+<link rel="icon" href="imagens/favicon-32.png?v=5" sizes="32x32" type="image/png">
+<link rel="icon" href="imagens/favicon-16.png?v=5" sizes="16x16" type="image/png">
+<link rel="shortcut icon" href="imagens/favicon.ico?v=5" type="image/x-icon">
+<link rel="apple-touch-icon" href="imagens/favicon-180.png?v=5" sizes="180x180">
+<meta name="theme-color" content="#333e63">
+
 <style>
   :root{
     --bg:#dfe7ff;
@@ -12,7 +19,6 @@
     --card:#3a4266;
     --ink:#0e1222;
     --ink-inv:#ffffff;
-    --brand:#6793ff;
     --line:#2b314a;
     --media-bg:#ffffff;
     --media-frame:#333e63;
@@ -27,7 +33,7 @@
     font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
     position:relative;
   }
-  /* Logo de fundo */
+  /* logo grande no fundo */
   body::after{
     content:""; position:fixed; inset:0;
     background:url("imagens/logo.png") no-repeat center calc(100% - 40px) / clamp(240px, 40vw, 520px);
@@ -39,11 +45,10 @@
     max-width:1280px; margin:auto; padding:10px 16px;
     display:flex; align-items:center; gap:12px;
   }
-  .brand{display:flex; align-items:center; gap:10px; color:#cfe0ff; font-weight:700; letter-spacing:.2px}
-  /* aumenta a logo sem aumentar a barra */
+  .brand{display:flex; align-items:center; gap:10px}
   .brand img{height:72px; display:block; transform:scale(1.2); transform-origin:left center}
+  .brand span{color:#cfe0ff; font-weight:700; letter-spacing:.2px}
 
-  /* Carrinho (ícone + badge) */
   .cart-btn{
     position:relative; display:inline-flex; align-items:center; justify-content:center;
     width:42px; height:42px; border-radius:10px; margin-right:10px;
@@ -57,10 +62,12 @@
     box-shadow:0 0 0 2px var(--panel);
   }
 
+  /* ===== Toolbar ===== */
   .toolbar{
     position:relative; z-index:1; max-width:1280px; margin:18px auto 8px; padding:14px 16px;
     background:var(--panel); border:1px solid var(--line); border-radius:14px;
-    display:grid; grid-template-columns: 1fr auto auto auto; gap:10px;
+    display:grid; grid-template-columns: auto 1fr auto auto auto; gap:10px;
+    align-items:end;
   }
   .toolbar label{color:#cfe0ff; font-size:12px; display:block; margin-bottom:6px}
   input,select,button{
@@ -77,6 +84,14 @@
   .search-wrap{display:flex; align-items:end; gap:8px}
   #search{width:min(720px, 100%)}
   #btnClearSearch{white-space:nowrap}
+
+  /* Logo mini (somente imagem, maior, sem texto) */
+  .brand-mini{
+    display:flex; align-items:center; justify-content:center;
+    padding:6px 10px 2px;
+    background:#2f395a; border:1px solid var(--line); border-radius:12px;
+  }
+  .brand-mini img{height:56px; display:block}
 
   main{position:relative; z-index:1; max-width:1280px; margin:8px auto 120px; padding:0 16px}
   .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:16px}
@@ -116,7 +131,7 @@
     margin:24px; max-width:1180px; width:100%;
     background:#e8eeff; border:1px solid #a3b0ff; border-radius:14px;
     box-shadow:0 10px 40px rgba(0,0,0,.35); overflow:hidden;
-    display:flex; flex-direction:column; max-height:92vh;   /* scroll visível */
+    display:flex; flex-direction:column; max-height:92vh;
   }
   .sheet header{position:sticky; top:0; background:#e8eeff; border-bottom:1px solid #a3b0ff; z-index:1}
   .sheet header .bar{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:12px 16px}
@@ -140,12 +155,8 @@
   .right{text-align:right; font-variant-numeric:tabular-nums}
   .tbl tfoot td{font-weight:800}
   .tbl tr{break-inside:avoid}
-  .tbl tr:first-child th:first-child{border-top-left-radius:10px}
-  .tbl tr:first-child th:last-child{border-top-right-radius:10px}
-  .tbl tfoot tr:last-child td:first-child{border-bottom-left-radius:10px}
-  .tbl tfoot tr:last-child td:last-child{border-bottom-right-radius:10px}
 
-  /* ===== IMPRESSÃO ===== */
+  /* ===== Impressão ===== */
   @media print{
     @page{ size:A4 landscape; margin:12mm }
     html,body{ background:#fff }
@@ -164,32 +175,21 @@
     }
     .overlay.print .sheet header{ position:static; border-bottom:0; padding:6mm 0 2mm }
     .overlay.print .sheet .content{ overflow:visible; padding:0 2mm }
-    .sel-grid{ grid-template-columns:repeat(2,1fr); gap:8px }
-    .sel-item{ break-inside:avoid; page-break-inside:avoid }
-    .tbl{ page-break-inside:auto }
-    .tbl tr{ page-break-inside:avoid; page-break-after:auto }
-    .price{ border:1px solid #ddd; background:#fff; color:#000 }
   }
 
-  /* ===== Responsividade (celular) ===== */
+  /* ===== Mobile ===== */
   @media (max-width: 768px){
-    body{ background:#0e1b3f }                  /* azul mais escuro no mobile (como no print) */
-    .toolbar{
-      grid-template-columns: 1fr;               /* empilha blocos */
-      gap:12px;
-    }
+    body{ background:#0e1b3f }
+    .toolbar{ grid-template-columns: 1fr; gap:12px }
     .toolbar > div{ width:100% }
+    .brand-mini{ justify-content:center }
+    .brand-mini img{ height:42px }
     .search-wrap{ flex-direction: column; align-items: stretch; gap:8px }
-    #search{
-      width:100%;
-      font-size:16px;                           /* evita zoom automático */
-      padding:12px 14px;
-    }
-    #btnClearSearch, #btnClear{ width:100% }    /* botões em largura total */
-    .brand img{ height:56px; transform:scale(1.15) }
-    .grid{ grid-template-columns:1fr }          /* cards em uma coluna */
-    .sheet{ margin:12px; max-height:90vh }      /* modais um pouco mais compactos */
-    .sel-grid{ grid-template-columns:1fr }      /* cards selecionados em uma coluna */
+    #search{ width:100%; font-size:16px; padding:12px 14px }
+    #btnClearSearch, #btnClear{ width:100% }
+    .grid{ grid-template-columns:1fr }
+    .sheet{ margin:12px; max-height:90vh }
+    .sel-grid{ grid-template-columns:1fr }
   }
 </style>
 </head>
@@ -216,6 +216,11 @@
 </header>
 
 <section class="toolbar">
+  <!-- Logo maior, sem texto -->
+  <div class="brand-mini" aria-hidden="true">
+    <img src="imagens/logo-branca.png" alt="" />
+  </div>
+
   <div class="search-wrap">
     <div style="flex:1">
       <label>Pesquisar modelo</label>
@@ -247,7 +252,7 @@
   </div>
 
   <div>
-    <label>Distância (Km) — aplica no 1º item incluído</label>
+    <label>Distância (Km) — custo somado ao 1º item</label>
     <input id="km" type="number" min="0" step="1" value="0" />
   </div>
 </section>
@@ -277,19 +282,17 @@
       <table class="tbl" id="tbl">
         <thead>
           <tr>
-            <th style="width:48%">Produto</th>
-            <th>Qtd</th>
-            <th class="right">Unit. (Valor líquido)</th>
-            <th class="right">Unit. (Valor c/ impostos)</th>
-            <th class="right">Total líquido</th>
-            <th class="right">Total c/ impostos</th>
+            <th style="width:58%">Produto</th>
+            <th style="width:8%">Qtd</th>
+            <th class="right" style="width:17%">Total líquido</th>
+            <th class="right" style="width:17%">Total c/ impostos</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
         <tfoot>
-          <tr><td colspan="6" class="right" id="subLiq">Subtotal valor líquido</td></tr>
-          <tr><td colspan="6" class="right" id="subImp">Subtotal valor c/ impostos</td></tr>
-          <tr><td colspan="6" class="right" id="totGeral">Total geral</td></tr>
+          <tr><td colspan="4" class="right" id="subLiq">Subtotal valor líquido</td></tr>
+          <tr><td colspan="4" class="right" id="subImp">Subtotal valor c/ impostos</td></tr>
+          <tr><td colspan="4" class="right" id="totGeral">Total geral</td></tr>
         </tfoot>
       </table>
     </div>
@@ -313,19 +316,17 @@
       <table class="tbl">
         <thead>
           <tr>
-            <th style="width:48%">Produto</th>
-            <th>Qtd</th>
-            <th class="right">Unit. (Líquido)</th>
-            <th class="right">Unit. (c/ Impostos)</th>
-            <th class="right">Total Líquido</th>
-            <th class="right">Total c/ Impostos</th>
+            <th style="width:58%">Produto</th>
+            <th style="width:8%">Qtd</th>
+            <th class="right" style="width:17%">Total líquido</th>
+            <th class="right" style="width:17%">Total c/ impostos</th>
           </tr>
         </thead>
         <tbody id="cartTbody"></tbody>
         <tfoot>
-          <tr><td colspan="6" class="right" id="cartSubLiq">Subtotal valor líquido</td></tr>
-          <tr><td colspan="6" class="right" id="cartSubImp">Subtotal valor c/ impostos</td></tr>
-          <tr><td colspan="6" class="right" id="cartTotGeral">Total geral</td></tr>
+          <tr><td colspan="4" class="right" id="cartSubLiq">Subtotal valor líquido</td></tr>
+          <tr><td colspan="4" class="right" id="cartSubImp">Subtotal valor c/ impostos</td></tr>
+          <tr><td colspan="4" class="right" id="cartTotGeral">Total geral</td></tr>
         </tfoot>
       </table>
     </div>
@@ -333,6 +334,9 @@
 </div>
 
 <script>
+/* ===== Config ===== */
+const TARIFA_KM = 1.6; // custo por Km (deslocamento)
+
 /* ===== Helpers ===== */
 const money = v => isFinite(v) ? v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '-';
 const parseBR = s => {
@@ -369,11 +373,10 @@ const btnClear=$('#btnClear'), btnClearSearch=$('#btnClearSearch');
 const btnCloseQuote=$('#btnCloseQuote'), overlay=$('#overlay'), btnPrint=$('#btnPrint'), btnBack=$('#btnBack');
 const selGrid=$('#selGrid'), tbody=$('#tbody'), subLiq=$('#subLiq'), subImp=$('#subImp'), totGeral=$('#totGeral'), meta=$('#meta'), sug=$('#sug');
 
-/* Carrinho */
-const btnCart=document.querySelector('#btnCart'), cartBadge=document.querySelector('#cartBadge');
-const cartOverlay=document.querySelector('#cartOverlay'), btnCloseCart=document.querySelector('#btnCloseCart');
-const cartSelGrid=document.querySelector('#cartSelGrid'), cartTbody=document.querySelector('#cartTbody');
-const cartSubLiq=document.querySelector('#cartSubLiq'), cartSubImp=document.querySelector('#cartSubImp'), cartTotGeral=document.querySelector('#cartTotGeral'), cartMeta=document.querySelector('#cartMeta');
+const btnCart=$('#btnCart'), cartBadge=$('#cartBadge');
+const cartOverlay=$('#cartOverlay'), btnCloseCart=$('#btnCloseCart');
+const cartSelGrid=$('#cartSelGrid'), cartTbody=$('#cartTbody');
+const cartSubLiq=$('#cartSubLiq'), cartSubImp=$('#cartSubImp'), cartTotGeral=$('#cartTotGeral'), cartMeta=$('#cartMeta');
 
 /* ===== Carregar JSON por UF ===== */
 async function loadDataByUF(uf){
@@ -390,10 +393,8 @@ async function loadDataByUF(uf){
       qty:1, incluir:0
     })).filter(x=>x.nome);
 
-    // preencher sugestões
     sug.innerHTML=state.all.map(it=>`<option value="${it.nome}">`).join('');
 
-    // inicia vazia; só aparece com busca
     state.filtered = [];
     renderCards();
     hint.style.display='block';
@@ -401,8 +402,7 @@ async function loadDataByUF(uf){
     updateCartBadge();
   }catch(err){
     console.error('Falha ao carregar catálogo:', err);
-    state.all = [];
-    state.filtered = [];
+    state.all = []; state.filtered = [];
     renderCards();
     hint.textContent = `Não foi possível carregar ${url}. Verifique se o arquivo existe na pasta "data/".`;
     hint.style.display = 'block';
@@ -456,7 +456,7 @@ function renderCards(){
 function applyFilter(){
   const q=inputSearch.value.trim().toLowerCase();
   if(q.length<1){
-    state.filtered = [];          // manter vazio quando não há busca
+    state.filtered = [];
     renderCards();
     return;
   }
@@ -467,7 +467,7 @@ function applyFilter(){
 /* ===== Preview (Fechar orçamento) ===== */
 function buildPreview(){
   const km = Math.max(0, parseInt(inputKM.value||'0',10));
-  const frete = km * 1.6; // aplica ao 1º item (valor líquido)
+  const custo = km * TARIFA_KM; // custo somado apenas no 1º item
   const itensSel = state.all.filter(it=>it.incluir);
 
   selGrid.innerHTML=''; tbody.innerHTML='';
@@ -481,14 +481,18 @@ function buildPreview(){
     return;
   }
 
+  // cartões acima da tabela (sem mencionar custo)
   itensSel.forEach((it,idx)=>{
+    const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
+    const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
+
     const box=document.createElement('div'); box.className='sel-item';
     box.innerHTML=`
       <div class="imgbox"><img alt="${it.nome}"></div>
       <div class="info">
         <h4>${it.nome}</h4>
         <div class="row"><div>Valor líquido: <b>${money(it.ad)}</b></div><div>Valor c/ impostos: <b>${money(it.an)}</b></div></div>
-        <div class="row"><div>Total líquido: <b>${money(it.ad * it.qty + (idx===0?frete:0))}</b></div><div>Total c/ impostos: <b>${money(it.an * it.qty)}</b></div></div>
+        <div class="row"><div>Total líquido: <b>${money(totalLiq)}</b></div><div>Total c/ impostos: <b>${money(totalImp)}</b></div></div>
         <div>Qtd: <b>${it.qty}</b></div>
       </div>
     `;
@@ -496,18 +500,17 @@ function buildPreview(){
     selGrid.appendChild(box);
   });
 
+  // tabela (apenas Qtd, Total líquido, Total c/ impostos)
   let subtotalLiq=0, subtotalImp=0;
   itensSel.forEach((it,idx)=>{
-    const unitLiq = it.ad, unitImp = it.an;
-    const totalLiq = unitLiq * it.qty + (idx===0?frete:0);
-    const totalImp = unitImp * it.qty;
+    const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
+    const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
     subtotalLiq += totalLiq; subtotalImp += totalImp;
+
     const tr=document.createElement('tr');
     tr.innerHTML=`
       <td>${it.nome}</td>
       <td class="right">${it.qty}</td>
-      <td class="right">${money(unitLiq)}</td>
-      <td class="right">${money(unitImp)}</td>
       <td class="right">${money(totalLiq)}</td>
       <td class="right">${money(totalImp)}</td>
     `;
@@ -527,7 +530,7 @@ function updateCartBadge(){
 }
 function buildCart(){
   const km = Math.max(0, parseInt(inputKM.value||'0',10));
-  const frete = km * 1.6;
+  const custo = km * TARIFA_KM;
   const itensSel = state.all.filter(it=>it.incluir);
 
   cartSelGrid.innerHTML=''; cartTbody.innerHTML='';
@@ -542,13 +545,15 @@ function buildCart(){
   }
 
   itensSel.forEach((it, idx)=>{
+    const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
+    const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
+
     const box=document.createElement('div'); box.className='sel-item';
     box.innerHTML=`
       <div class="imgbox"><img alt="${it.nome}"></div>
       <div class="info">
         <h4>${it.nome}</h4>
-        <div class="row"><div>Unit. Líq.: <b>${money(it.ad)}</b></div><div>Unit. c/ Imp.: <b>${money(it.an)}</b></div></div>
-        <div class="row"><div>Total Líq.: <b>${money(it.ad*it.qty + (idx===0?frete:0))}</b></div><div>Total c/ Imp.: <b>${money(it.an*it.qty)}</b></div></div>
+        <div class="row"><div>Total Líq.: <b>${money(totalLiq)}</b></div><div>Total c/ Imp.: <b>${money(totalImp)}</b></div></div>
         <div>Qtd: <b>${it.qty}</b></div>
       </div>`;
     const img=box.querySelector('img'); loadImageWithFallback(img,candidatesFor(it.nome));
@@ -557,15 +562,13 @@ function buildCart(){
 
   let subtotalLiq=0, subtotalImp=0;
   itensSel.forEach((it,idx)=>{
-    const totalLiq = it.ad*it.qty + (idx===0?frete:0);
-    const totalImp = it.an*it.qty;
+    const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
+    const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
     subtotalLiq += totalLiq; subtotalImp += totalImp;
     const tr=document.createElement('tr');
     tr.innerHTML=`
       <td>${it.nome}</td>
       <td class="right">${it.qty}</td>
-      <td class="right">${money(it.ad)}</td>
-      <td class="right">${money(it.an)}</td>
       <td class="right">${money(totalLiq)}</td>
       <td class="right">${money(totalImp)}</td>`;
     cartTbody.appendChild(tr);
@@ -582,7 +585,7 @@ btnClearSearch.addEventListener('click',()=>{ inputSearch.value=""; applyFilter(
 selectUF.addEventListener('change',async()=>{
   state.uf=selectUF.value;
   await loadDataByUF(state.uf);
-  applyFilter();  // mantém vazio após troca
+  applyFilter();
 });
 
 inputKM.addEventListener('input',e=>{state.km=Math.max(0,parseInt(e.target.value||'0',10));});
@@ -590,21 +593,17 @@ inputKM.addEventListener('input',e=>{state.km=Math.max(0,parseInt(e.target.value
 /* Limpar carrinho (com confirmação) */
 btnClear.addEventListener('click',()=>{
   const temItens = state.all.some(it => it.incluir);
-  if(!temItens){
-    alert('O carrinho já está vazio.');
-    return;
-  }
+  if(!temItens){ alert('O carrinho já está vazio.'); return; }
   const ok = confirm('Tem certeza que deseja LIMPAR o carrinho?\nTodos os itens selecionados serão removidos.');
   if(!ok) return;
-
   state.all.forEach(it=>{it.incluir=0; it.qty=1;});
   state.filtered.forEach(it=>{it.incluir=0; it.qty=1;});
   renderCards(); updateCartBadge();
 });
 
 /* Abrir/fechar carrinho */
-document.querySelector('#btnCart').addEventListener('click',()=>{ buildCart(); document.querySelector('#cartOverlay').classList.add('show'); });
-document.querySelector('#btnCloseCart').addEventListener('click',()=> document.querySelector('#cartOverlay').classList.remove('show'));
+btnCart.addEventListener('click',()=>{ buildCart(); cartOverlay.classList.add('show'); });
+btnCloseCart.addEventListener('click',()=> cartOverlay.classList.remove('show'));
 
 /* Overlay de orçamento + impressão */
 btnCloseQuote.addEventListener('click',()=>{ buildPreview(); overlay.classList.add('show'); });
@@ -618,14 +617,14 @@ btnPrint.addEventListener('click', doPrintOverlay);
 window.addEventListener('afterprint', ()=> overlay.classList.remove('print'));
 if(window.matchMedia){
   const mql = window.matchMedia('print');
-  mql.addEventListener?.('change', e=>{
-    if(!e.matches){ overlay.classList.remove('print'); }
-  });
+  const onChange = e => { if(!e.matches){ overlay.classList.remove('print'); } };
+  if(mql.addEventListener) mql.addEventListener('change', onChange);
+  else if(mql.addListener) mql.addListener(onChange);
 }
 
 /* ===== Boot ===== */
 (async function init(){
-  await loadDataByUF(state.uf);   // inicia vazio; só busca mostra itens
+  await loadDataByUF(state.uf);   // inicia vazio; só aparece ao pesquisar
 })();
 </script>
 </body>
