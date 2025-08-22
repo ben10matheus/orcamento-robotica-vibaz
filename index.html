@@ -7,15 +7,15 @@
 
 <style>
   :root{
-    --bg:#dfe7ff;          /* fundo da página (azul claro) */
-    --panel:#333e63;       /* cabeçalho/toolbar */
-    --card:#3a4266;        /* área de dados do cartão */
+    --bg:#dfe7ff;
+    --panel:#333e63;
+    --card:#3a4266;
     --ink:#0e1222;
     --ink-inv:#ffffff;
-    --brand:#6793ff;       /* tom principal (botões/moldura) */
+    --brand:#6793ff;
     --line:#2b314a;
-    --media-bg:#ffffff;    /* fundo da imagem do card */
-    --media-frame:#333e63; /* moldura do card */
+    --media-bg:#ffffff;
+    --media-frame:#333e63;
     --btn:#6e95ff;
     --btn-hover:#587ef0;
     --black:#000;
@@ -23,164 +23,173 @@
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
+    margin:0; background:var(--bg); color:var(--ink);
     font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
     position:relative;
   }
-  /* LOGO DE FUNDO — fixa com 30% de opacidade */
+  /* Logo de fundo */
   body::after{
-    content:"";
-    position:fixed;
-    inset:0;
-    background:
-      url("imagens/logo.png")
-      no-repeat
-      center calc(100% - 40px) / clamp(240px, 40vw, 520px);
-    opacity:.30;               /* ~30% */
-    pointer-events:none;
-    z-index:0;
+    content:""; position:fixed; inset:0;
+    background:url("imagens/logo.png") no-repeat center calc(100% - 40px) / clamp(240px, 40vw, 520px);
+    opacity:.30; pointer-events:none; z-index:0;
   }
 
-  header{
-    position:sticky;
-    top:0;
-    z-index:20;
-    background:var(--panel);
-    border-bottom:1px solid var(--line);
-  }
+  header{position:sticky; top:0; z-index:20; background:var(--panel); border-bottom:1px solid var(--line)}
   header .wrap{
-    max-width:1280px;
-    margin:auto;
-    padding:10px 16px;
-    display:flex;
-    align-items:center;
-    gap:12px;
+    max-width:1280px; margin:auto; padding:10px 16px;
+    display:flex; align-items:center; gap:12px;
   }
-  .brand{
-    display:flex; align-items:center; gap:10px;
-    color:#cfe0ff; font-weight:700; letter-spacing:.2px;
+  .brand{display:flex; align-items:center; gap:10px; color:#cfe0ff; font-weight:700; letter-spacing:.2px}
+  /* aumenta a logo sem aumentar a barra */
+  .brand img{height:72px; display:block; transform:scale(1.2); transform-origin:left center}
+
+  /* Carrinho (ícone + badge) */
+  .cart-btn{
+    position:relative; display:inline-flex; align-items:center; justify-content:center;
+    width:42px; height:42px; border-radius:10px; margin-right:10px;
+    background:#44507c; color:#e9efff; cursor:pointer; border:1px solid var(--line);
   }
-  .brand img{height:72px; display:block}
+  .cart-btn:hover{ background:#3b486f }
+  .cart-btn .badge{
+    position:absolute; top:-6px; right:-6px; display:none;
+    background:#e03131; color:#fff; font-weight:800; font-size:11px; line-height:1;
+    padding:4px 6px; border-radius:999px; min-width:18px; text-align:center;
+    box-shadow:0 0 0 2px var(--panel);
+  }
 
   .toolbar{
-    position:relative;
-    z-index:1; /* acima da logo de fundo */
-    max-width:1280px;
-    margin:18px auto 8px;
-    padding:14px 16px;
-    background:var(--panel);
-    border:1px solid var(--line);
-    border-radius:14px;
-    display:grid;
-    grid-template-columns: 1fr auto auto auto;
-    gap:10px;
+    position:relative; z-index:1; max-width:1280px; margin:18px auto 8px; padding:14px 16px;
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    display:grid; grid-template-columns: 1fr auto auto auto; gap:10px;
   }
-  .toolbar label{color:#cfe0ff;font-size:12px;display:block;margin-bottom:6px}
+  .toolbar label{color:#cfe0ff; font-size:12px; display:block; margin-bottom:6px}
   input,select,button{
-    padding:10px 12px;
-    border-radius:10px;
-    border:1px solid var(--line);
-    background:#f6f8ff;
-    color:#111;
-    outline:none;
+    padding:10px 12px; border-radius:10px; border:1px solid var(--line);
+    background:#f6f8ff; color:#111; outline:none;
   }
   input::placeholder{color:#8088a8}
-  .btn{
-    cursor:pointer;background:var(--btn);color:var(--ink-inv);
-    border:none;font-weight:700;border-radius:10px;padding:10px 14px
-  }
+  .btn{cursor:pointer; background:var(--btn); color:var(--ink-inv); border:none; font-weight:700; border-radius:10px; padding:10px 14px}
   .btn:hover{background:var(--btn-hover)}
-  .btn.secondary{background:#44507c;color:#e9efff}
+  .btn.secondary{background:#44507c; color:#e9efff}
+  .btn.danger{background:#e03131; color:#fff}
+  .btn.danger:hover{background:#c22020}
 
-  /* Campo de busca GRANDE + botão ao lado */
-  .search-wrap{display:flex;align-items:end;gap:8px}
-  #search{width:min(720px, 100%)}   /* largo */
+  .search-wrap{display:flex; align-items:end; gap:8px}
+  #search{width:min(720px, 100%)}
   #btnClearSearch{white-space:nowrap}
 
-  main{
-    position:relative; z-index:1; /* acima da logo de fundo */
-    max-width:1280px;
-    margin:8px auto 120px;
-    padding:0 16px;
-  }
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
-    gap:16px;
-  }
+  main{position:relative; z-index:1; max-width:1280px; margin:8px auto 120px; padding:0 16px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:16px}
 
-  /* --- CARTÃO --- */
-  .card{border-radius:16px;overflow:hidden;border:3px solid var(--media-frame);background:#eef3ff}
-  .media{
-    background:var(--media-bg);
-    border-bottom:3px solid var(--media-frame);
-    display:flex;align-items:center;justify-content:center;
-    aspect-ratio:16/12
-  }
-  .media img{max-width:95%;max-height:95%;object-fit:contain}
-  .body{background:var(--card);color:#e9efff;border-top:1px solid var(--line);padding:12px}
-  .title{font-weight:800;margin:0 0 8px}
-  .row{display:flex;gap:8px;margin:8px 0}
-  .row>*{flex:1;min-width:0}
-  label{display:block;font-size:12px;margin-bottom:4px;opacity:.9}
-  .price{background:#2f395e;color:#e9f2ff;border:1px solid #243055;width:100%}
-  .qty{background:#eef3ff;width:100%}
+  .card{border-radius:16px; overflow:hidden; border:3px solid var(--media-frame); background:#eef3ff}
+  .media{background:var(--media-bg); border-bottom:3px solid var(--media-frame); display:flex; align-items:center; justify-content:center; aspect-ratio:16/12}
+  .media img{max-width:95%; max-height:95%; object-fit:contain}
+  .body{background:var(--card); color:#e9efff; border-top:1px solid var(--line); padding:12px}
+  .title{font-weight:800; margin:0 0 8px}
+  .row{display:flex; gap:8px; margin:8px 0}
+  .row>*{flex:1; min-width:0}
+  label{display:block; font-size:12px; margin-bottom:4px; opacity:.9}
+  .price{background:#2f395e; color:#e9f2ff; border:1px solid #243055; width:100%}
+  .qty{background:#eef3ff; width:100%}
 
   .include-btn{
-    width:100%;padding:12px 14px;border-radius:12px;font-weight:800;
-    background:var(--btn);color:#fff;border:none;cursor:pointer;
-    box-shadow:0 2px 0 0 #425fb5;white-space:nowrap
+    width:100%; padding:12px 14px; border-radius:12px; font-weight:800;
+    background:var(--btn); color:#fff; border:none; cursor:pointer;
+    box-shadow:0 2px 0 0 #425fb5; white-space:nowrap;
   }
   .include-btn:hover{background:var(--btn-hover)}
-  .include-btn[data-on="1"]{background:#2fbf71;box-shadow:0 2px 0 0 #1d7b49}
+  .include-btn[data-on="1"]{background:#e03131; box-shadow:0 2px 0 0 #932020}
+  .include-btn[data-on="1"]:hover{background:#c22020}
 
   .placeholder{
-    margin:24px auto 0;padding:16px;border:1px dashed #9fb3ff;border-radius:12px;
-    text-align:center;color:#3a4266;background:#f0f4ff;max-width:900px
+    margin:24px auto 0; padding:16px; border:1px dashed #9fb3ff; border-radius:12px;
+    text-align:center; color:#3a4266; background:#f0f4ff; max-width:900px
   }
 
-  /* ===== Preview (fechar orçamento) ===== */
-  .overlay{position:fixed;inset:0;background:rgba(18,24,40,.6);display:none;align-items:flex-start;justify-content:center;z-index:50}
+  /* ===== Overlays ===== */
+  .overlay{
+    position:fixed; inset:0; background:rgba(18,24,40,.6);
+    display:none; align-items:flex-start; justify-content:center; z-index:50;
+  }
   .overlay.show{display:flex}
   .sheet{
-    margin:24px;max-width:1180px;width:100%;background:#e8eeff;border:1px solid #a3b0ff;
-    border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.35);overflow:hidden
+    margin:24px; max-width:1180px; width:100%;
+    background:#e8eeff; border:1px solid #a3b0ff; border-radius:14px;
+    box-shadow:0 10px 40px rgba(0,0,0,.35); overflow:hidden;
+    display:flex; flex-direction:column; max-height:92vh;   /* scroll visível */
   }
-  .sheet header{position:sticky;top:0;background:#e8eeff;border-bottom:1px solid #a3b0ff}
-  .sheet header .bar{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:12px 16px}
-  .sheet header h3{margin:0;font-size:18px;color:#222}
-  .sheet .meta{font-size:12px;color:#444}
-  .sheet .content{padding:14px}
+  .sheet header{position:sticky; top:0; background:#e8eeff; border-bottom:1px solid #a3b0ff; z-index:1}
+  .sheet header .bar{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:12px 16px}
+  .sheet header h3{margin:0; font-size:18px; color:#222}
+  .sheet .meta{font-size:12px; color:#444}
+  .sheet .content{padding:14px; overflow:auto}
 
-  .sel-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-  .sel-item{display:flex;gap:12px;border:1px solid #a3b0ff;border-radius:10px;background:#f6f8ff;padding:10px}
-  .sel-item .imgbox{width:140px;height:110px;display:flex;align-items:center;justify-content:center;border:1px solid #d8e0ff;border-radius:8px;background:#fff;overflow:hidden}
-  .sel-item img{max-width:100%;max-height:100%;object-fit:contain}
-  .sel-item .info h4{margin:0 0 6px;font-size:15px}
-  .sel-item .info .row{display:flex;gap:24px;font-size:13px}
+  .sel-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+  .sel-item{display:flex; gap:12px; border:1px solid #a3b0ff; border-radius:10px; background:#f6f8ff; padding:10px; break-inside:avoid}
+  .sel-item .imgbox{width:140px; height:110px; display:flex; align-items:center; justify-content:center; border:1px solid #d8e0ff; border-radius:8px; background:#fff; overflow:hidden}
+  .sel-item img{max-width:100%; max-height:100%; object-fit:contain}
+  .sel-item .info h4{margin:0 0 6px; font-size:15px}
+  .sel-item .info .row{display:flex; gap:24px; font-size:13px}
 
-  /* Tabela com cantos arredondados e linhas pretas */
   .tbl{
-    width:100%;border-collapse:separate;border-spacing:0;margin-top:12px;background:#fff;
-    border:1px solid var(--black);border-radius:10px;overflow:hidden
+    width:100%; border-collapse:separate; border-spacing:0; margin-top:12px; background:#fff;
+    border:1px solid var(--black); border-radius:10px; overflow:hidden
   }
-  .tbl th,.tbl td{border:1px solid var(--black);padding:8px}
-  .tbl th{background:#eef2ff;text-align:left}
-  .right{text-align:right;font-variant-numeric:tabular-nums}
+  .tbl th,.tbl td{border:1px solid var(--black); padding:8px}
+  .tbl th{background:#eef2ff; text-align:left}
+  .right{text-align:right; font-variant-numeric:tabular-nums}
   .tbl tfoot td{font-weight:800}
+  .tbl tr{break-inside:avoid}
   .tbl tr:first-child th:first-child{border-top-left-radius:10px}
   .tbl tr:first-child th:last-child{border-top-right-radius:10px}
   .tbl tfoot tr:last-child td:first-child{border-bottom-left-radius:10px}
   .tbl tfoot tr:last-child td:last-child{border-bottom-right-radius:10px}
 
+  /* ===== IMPRESSÃO ===== */
   @media print{
-    header,.toolbar,.placeholder,.overlay:not(.print){display:none!important}
-    body{background:#fff}
-    body::after{display:none}
-    .sheet{margin:0;border:none;border-radius:0;box-shadow:none}
-    .overlay.print{display:block}
+    @page{ size:A4 landscape; margin:12mm }
+    html,body{ background:#fff }
+    body::after{ display:none }
+
+    header,.toolbar,.placeholder,#catalog,.grid,.card,
+    .overlay:not(.print){ display:none !important }
+
+    .overlay.print{
+      display:block !important; position:static !important; background:transparent !important;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact;
+    }
+    .overlay.print .sheet{
+      margin:0; border:none; border-radius:0; box-shadow:none;
+      max-height:none; overflow:visible; width:100% !important; max-width:100% !important;
+    }
+    .overlay.print .sheet header{ position:static; border-bottom:0; padding:6mm 0 2mm }
+    .overlay.print .sheet .content{ overflow:visible; padding:0 2mm }
+    .sel-grid{ grid-template-columns:repeat(2,1fr); gap:8px }
+    .sel-item{ break-inside:avoid; page-break-inside:avoid }
+    .tbl{ page-break-inside:auto }
+    .tbl tr{ page-break-inside:avoid; page-break-after:auto }
+    .price{ border:1px solid #ddd; background:#fff; color:#000 }
+  }
+
+  /* ===== Responsividade (celular) ===== */
+  @media (max-width: 768px){
+    body{ background:#0e1b3f }                  /* azul mais escuro no mobile (como no print) */
+    .toolbar{
+      grid-template-columns: 1fr;               /* empilha blocos */
+      gap:12px;
+    }
+    .toolbar > div{ width:100% }
+    .search-wrap{ flex-direction: column; align-items: stretch; gap:8px }
+    #search{
+      width:100%;
+      font-size:16px;                           /* evita zoom automático */
+      padding:12px 14px;
+    }
+    #btnClearSearch, #btnClear{ width:100% }    /* botões em largura total */
+    .brand img{ height:56px; transform:scale(1.15) }
+    .grid{ grid-template-columns:1fr }          /* cards em uma coluna */
+    .sheet{ margin:12px; max-height:90vh }      /* modais um pouco mais compactos */
+    .sel-grid{ grid-template-columns:1fr }      /* cards selecionados em uma coluna */
   }
 </style>
 </head>
@@ -192,6 +201,14 @@
       <img src="imagens/logo-branca.png" alt="Vibaz Robótica" />
       <span>Vibaz Robótica</span>
     </div>
+
+    <div class="cart-btn" id="btnCart" title="Abrir carrinho" aria-label="Abrir carrinho">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path fill="currentColor" d="M7 4H5L4 6v2h2l3.6 7.59-1.35 2.41A2 2 0 0 0 10 20h10v-2H10l1.1-2h6.45c.75 0 1.41-.41 1.75-1.03L22 9H7.42l-.94-2H7V4Zm2 16a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/>
+      </svg>
+      <span class="badge" id="cartBadge">0</span>
+    </div>
+
     <div style="margin-left:auto">
       <button class="btn" id="btnCloseQuote">Fechar orçamento</button>
     </div>
@@ -210,7 +227,7 @@
 
   <div style="align-self:end">
     <label>&nbsp;</label>
-    <button class="btn secondary" id="btnClear">Remover todos</button>
+    <button class="btn danger" id="btnClear">Limpar carrinho</button>
   </div>
 
   <div>
@@ -257,7 +274,6 @@
     </header>
     <div class="content">
       <div class="sel-grid" id="selGrid"></div>
-
       <table class="tbl" id="tbl">
         <thead>
           <tr>
@@ -274,6 +290,42 @@
           <tr><td colspan="6" class="right" id="subLiq">Subtotal valor líquido</td></tr>
           <tr><td colspan="6" class="right" id="subImp">Subtotal valor c/ impostos</td></tr>
           <tr><td colspan="6" class="right" id="totGeral">Total geral</td></tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Carrinho -->
+<div class="overlay" id="cartOverlay">
+  <div class="sheet">
+    <header>
+      <div class="bar">
+        <div>
+          <h3>Carrinho — Itens selecionados</h3>
+          <div class="meta" id="cartMeta"></div>
+        </div>
+        <div><button class="btn secondary" id="btnCloseCart">Fechar</button></div>
+      </div>
+    </header>
+    <div class="content">
+      <div class="sel-grid" id="cartSelGrid"></div>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th style="width:48%">Produto</th>
+            <th>Qtd</th>
+            <th class="right">Unit. (Líquido)</th>
+            <th class="right">Unit. (c/ Impostos)</th>
+            <th class="right">Total Líquido</th>
+            <th class="right">Total c/ Impostos</th>
+          </tr>
+        </thead>
+        <tbody id="cartTbody"></tbody>
+        <tfoot>
+          <tr><td colspan="6" class="right" id="cartSubLiq">Subtotal valor líquido</td></tr>
+          <tr><td colspan="6" class="right" id="cartSubImp">Subtotal valor c/ impostos</td></tr>
+          <tr><td colspan="6" class="right" id="cartTotGeral">Total geral</td></tr>
         </tfoot>
       </table>
     </div>
@@ -317,20 +369,44 @@ const btnClear=$('#btnClear'), btnClearSearch=$('#btnClearSearch');
 const btnCloseQuote=$('#btnCloseQuote'), overlay=$('#overlay'), btnPrint=$('#btnPrint'), btnBack=$('#btnBack');
 const selGrid=$('#selGrid'), tbody=$('#tbody'), subLiq=$('#subLiq'), subImp=$('#subImp'), totGeral=$('#totGeral'), meta=$('#meta'), sug=$('#sug');
 
+/* Carrinho */
+const btnCart=document.querySelector('#btnCart'), cartBadge=document.querySelector('#cartBadge');
+const cartOverlay=document.querySelector('#cartOverlay'), btnCloseCart=document.querySelector('#btnCloseCart');
+const cartSelGrid=document.querySelector('#cartSelGrid'), cartTbody=document.querySelector('#cartTbody');
+const cartSubLiq=document.querySelector('#cartSubLiq'), cartSubImp=document.querySelector('#cartSubImp'), cartTotGeral=document.querySelector('#cartTotGeral'), cartMeta=document.querySelector('#cartMeta');
+
 /* ===== Carregar JSON por UF ===== */
 async function loadDataByUF(uf){
   const map={PR:'data/pr.json', outros:'data/outros.json'};
   const url= uf==='PR' ? map.PR : map.outros;
-  const res=await fetch(url,{cache:'no-store'});
-  const data=await res.json();
-  state.all=data.map(x=>({
-    nome:String(x.nome||x.modelo||x.Nome||'').trim(),
-    ad:parseBR(x.ad??x.AD??x.sem_impostos??x.unit_sem??0),
-    an:parseBR(x.an??x.AN??x.com_impostos??x.unit_com??0),
-    qty:1, incluir:0
-  })).filter(x=>x.nome);
-  sug.innerHTML=state.all.map(it=>`<option value="${it.nome}">`).join('');
-  state.filtered=[]; renderCards();
+  try{
+    const res=await fetch(url,{cache:'no-store'});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data=await res.json();
+    state.all=data.map(x=>({
+      nome:String(x.nome||x.modelo||x.Nome||'').trim(),
+      ad:parseBR(x.ad??x.AD??x.sem_impostos??x.unit_sem??0),
+      an:parseBR(x.an??x.AN??x.com_impostos??x.unit_com??0),
+      qty:1, incluir:0
+    })).filter(x=>x.nome);
+
+    // preencher sugestões
+    sug.innerHTML=state.all.map(it=>`<option value="${it.nome}">`).join('');
+
+    // inicia vazia; só aparece com busca
+    state.filtered = [];
+    renderCards();
+    hint.style.display='block';
+    hint.textContent='Use a busca acima para listar os modelos.';
+    updateCartBadge();
+  }catch(err){
+    console.error('Falha ao carregar catálogo:', err);
+    state.all = [];
+    state.filtered = [];
+    renderCards();
+    hint.textContent = `Não foi possível carregar ${url}. Verifique se o arquivo existe na pasta "data/".`;
+    hint.style.display = 'block';
+  }
 }
 
 /* ===== Render ===== */
@@ -352,26 +428,39 @@ function renderCards(){
       </div>
       <div class="row">
         <div style="max-width:170px"><label>Quantidade</label><input class="qty" type="number" min="1" step="1" value="${it.qty}"></div>
-        <div style="display:flex;align-items:flex-end"><button class="include-btn" data-on="${it.incluir?1:0}">${it.incluir?'Incluído':'Incluir'}</button></div>
+        <div style="display:flex;align-items:flex-end">
+          <button class="include-btn" data-on="${it.incluir?1:0}">
+            ${it.incluir?'Remover':'Adicionar ao carrinho'}
+          </button>
+        </div>
       </div>
     `;
     body.querySelector('.qty').addEventListener('input',e=>{
       const v=Math.max(1,parseInt(e.target.value||'1',10)); it.qty=v; e.target.value=v;
+      updateCartBadge();
     });
     const btn=body.querySelector('.include-btn');
     btn.addEventListener('click',()=>{
-      it.incluir=it.incluir?0:1; btn.dataset.on=it.incluir?1:0; btn.textContent=it.incluir?'Incluído':'Incluir';
+      it.incluir=it.incluir?0:1;
+      btn.dataset.on=it.incluir?1:0;
+      btn.textContent=it.incluir?'Remover':'Adicionar ao carrinho';
       card.dataset.selected=it.incluir?'1':'0';
+      updateCartBadge();
     });
 
     card.append(media,body); catalog.appendChild(card);
   });
 }
 
+/* ===== Busca ===== */
 function applyFilter(){
   const q=inputSearch.value.trim().toLowerCase();
-  if(q.length<1){ state.filtered=[]; renderCards(); return; }
-  state.filtered=state.all.filter(it=>it.nome.toLowerCase().includes(q));
+  if(q.length<1){
+    state.filtered = [];          // manter vazio quando não há busca
+    renderCards();
+    return;
+  }
+  state.filtered = state.all.filter(it=>it.nome.toLowerCase().includes(q));
   renderCards();
 }
 
@@ -409,12 +498,10 @@ function buildPreview(){
 
   let subtotalLiq=0, subtotalImp=0;
   itensSel.forEach((it,idx)=>{
-    const unitLiq = it.ad;
-    const unitImp = it.an;
+    const unitLiq = it.ad, unitImp = it.an;
     const totalLiq = unitLiq * it.qty + (idx===0?frete:0);
     const totalImp = unitImp * it.qty;
-    subtotalLiq += totalLiq;
-    subtotalImp += totalImp;
+    subtotalLiq += totalLiq; subtotalImp += totalImp;
     const tr=document.createElement('tr');
     tr.innerHTML=`
       <td>${it.nome}</td>
@@ -432,31 +519,114 @@ function buildPreview(){
   totGeral.textContent= `Total geral                   ${money(subtotalImp)}`;
 }
 
+/* ===== Carrinho ===== */
+function updateCartBadge(){
+  const count = state.all.filter(it => it.incluir).reduce((s,it)=>s + Number(it.qty||0), 0);
+  cartBadge.textContent = count;
+  cartBadge.style.display = count > 0 ? 'inline-block' : 'none';
+}
+function buildCart(){
+  const km = Math.max(0, parseInt(inputKM.value||'0',10));
+  const frete = km * 1.6;
+  const itensSel = state.all.filter(it=>it.incluir);
+
+  cartSelGrid.innerHTML=''; cartTbody.innerHTML='';
+  cartSubLiq.textContent='Subtotal valor líquido';
+  cartSubImp.textContent='Subtotal valor c/ impostos';
+  cartTotGeral.textContent='Total geral';
+  cartMeta.textContent=`UF: ${selectUF.value.toUpperCase()} • Distância: ${km} Km • ${itensSel.length} item(ns)`;
+
+  if(itensSel.length===0){
+    cartSelGrid.innerHTML='<div style="grid-column:1/-1;padding:10px;background:#fff;border:1px dashed #a3b0ff;border-radius:10px;text-align:center">Nenhum item no carrinho.</div>';
+    return;
+  }
+
+  itensSel.forEach((it, idx)=>{
+    const box=document.createElement('div'); box.className='sel-item';
+    box.innerHTML=`
+      <div class="imgbox"><img alt="${it.nome}"></div>
+      <div class="info">
+        <h4>${it.nome}</h4>
+        <div class="row"><div>Unit. Líq.: <b>${money(it.ad)}</b></div><div>Unit. c/ Imp.: <b>${money(it.an)}</b></div></div>
+        <div class="row"><div>Total Líq.: <b>${money(it.ad*it.qty + (idx===0?frete:0))}</b></div><div>Total c/ Imp.: <b>${money(it.an*it.qty)}</b></div></div>
+        <div>Qtd: <b>${it.qty}</b></div>
+      </div>`;
+    const img=box.querySelector('img'); loadImageWithFallback(img,candidatesFor(it.nome));
+    cartSelGrid.appendChild(box);
+  });
+
+  let subtotalLiq=0, subtotalImp=0;
+  itensSel.forEach((it,idx)=>{
+    const totalLiq = it.ad*it.qty + (idx===0?frete:0);
+    const totalImp = it.an*it.qty;
+    subtotalLiq += totalLiq; subtotalImp += totalImp;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${it.nome}</td>
+      <td class="right">${it.qty}</td>
+      <td class="right">${money(it.ad)}</td>
+      <td class="right">${money(it.an)}</td>
+      <td class="right">${money(totalLiq)}</td>
+      <td class="right">${money(totalImp)}</td>`;
+    cartTbody.appendChild(tr);
+  });
+  cartSubLiq.textContent = `Subtotal valor líquido       ${money(subtotalLiq)}`;
+  cartSubImp.textContent  = `Subtotal valor c/ impostos   ${money(subtotalImp)}`;
+  cartTotGeral.textContent= `Total geral                   ${money(subtotalImp)}`;
+}
+
 /* ===== Eventos ===== */
 inputSearch.addEventListener('input',applyFilter);
-btnClearSearch.addEventListener('click',()=>{inputSearch.value=""; applyFilter();});
+btnClearSearch.addEventListener('click',()=>{ inputSearch.value=""; applyFilter(); });
+
 selectUF.addEventListener('change',async()=>{
   state.uf=selectUF.value;
   await loadDataByUF(state.uf);
-  applyFilter();
-});
-inputKM.addEventListener('input',e=>{state.km=Math.max(0,parseInt(e.target.value||'0',10));});
-btnClear.addEventListener('click',()=>{
-  state.all.forEach(it=>it.incluir=0);
-  state.filtered.forEach(it=>it.incluir=0);
-  renderCards();
+  applyFilter();  // mantém vazio após troca
 });
 
+inputKM.addEventListener('input',e=>{state.km=Math.max(0,parseInt(e.target.value||'0',10));});
+
+/* Limpar carrinho (com confirmação) */
+btnClear.addEventListener('click',()=>{
+  const temItens = state.all.some(it => it.incluir);
+  if(!temItens){
+    alert('O carrinho já está vazio.');
+    return;
+  }
+  const ok = confirm('Tem certeza que deseja LIMPAR o carrinho?\nTodos os itens selecionados serão removidos.');
+  if(!ok) return;
+
+  state.all.forEach(it=>{it.incluir=0; it.qty=1;});
+  state.filtered.forEach(it=>{it.incluir=0; it.qty=1;});
+  renderCards(); updateCartBadge();
+});
+
+/* Abrir/fechar carrinho */
+document.querySelector('#btnCart').addEventListener('click',()=>{ buildCart(); document.querySelector('#cartOverlay').classList.add('show'); });
+document.querySelector('#btnCloseCart').addEventListener('click',()=> document.querySelector('#cartOverlay').classList.remove('show'));
+
+/* Overlay de orçamento + impressão */
 btnCloseQuote.addEventListener('click',()=>{ buildPreview(); overlay.classList.add('show'); });
 btnBack.addEventListener('click',()=>overlay.classList.remove('show'));
-btnPrint.addEventListener('click',()=>{
+
+function doPrintOverlay(){
   overlay.classList.add('print');
-  window.print();
-  overlay.classList.remove('print');
-});
+  setTimeout(()=>window.print(), 50);
+}
+btnPrint.addEventListener('click', doPrintOverlay);
+window.addEventListener('afterprint', ()=> overlay.classList.remove('print'));
+if(window.matchMedia){
+  const mql = window.matchMedia('print');
+  mql.addEventListener?.('change', e=>{
+    if(!e.matches){ overlay.classList.remove('print'); }
+  });
+}
 
 /* ===== Boot ===== */
-(async function init(){ await loadDataByUF(state.uf); })();
+(async function init(){
+  await loadDataByUF(state.uf);   // inicia vazio; só busca mostra itens
+})();
 </script>
 </body>
 </html>
