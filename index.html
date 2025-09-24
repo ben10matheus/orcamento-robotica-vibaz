@@ -14,17 +14,8 @@
 
 <style>
   :root{
-    --bg:#dfe7ff;
-    --panel:#333e63;
-    --card:#3a4266;
-    --ink:#0e1222;
-    --ink-inv:#ffffff;
-    --line:#2b314a;
-    --media-bg:#ffffff;
-    --media-frame:#333e63;
-    --btn:#6e95ff;
-    --btn-hover:#587ef0;
-    --black:#000;
+    --bg:#dfe7ff; --panel:#333e63; --card:#3a4266; --ink:#0e1222; --ink-inv:#ffffff;
+    --line:#2b314a; --media-bg:#ffffff; --media-frame:#333e63; --btn:#6e95ff; --btn-hover:#587ef0; --black:#000;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -33,7 +24,7 @@
     font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
     position:relative;
   }
-  /* logo grande no fundo */
+  /* logo grande de fundo */
   body::after{
     content:""; position:fixed; inset:0;
     background:url("imagens/logo.png") no-repeat center calc(100% - 40px) / clamp(240px, 40vw, 520px);
@@ -41,39 +32,18 @@
   }
 
   header{position:sticky; top:0; z-index:20; background:var(--panel); border-bottom:1px solid var(--line)}
-  header .wrap{
-    max-width:1280px; margin:auto; padding:10px 16px;
-    display:flex; align-items:center; gap:12px;
-  }
+  header .wrap{ max-width:1280px; margin:auto; padding:10px 16px; display:flex; align-items:center; gap:12px }
   .brand{display:flex; align-items:center; gap:10px}
   .brand img{height:72px; display:block; transform:scale(1.2); transform-origin:left center}
   .brand span{color:#cfe0ff; font-weight:700; letter-spacing:.2px}
 
-  .cart-btn{
-    position:relative; display:inline-flex; align-items:center; justify-content:center;
-    width:42px; height:42px; border-radius:10px; margin-right:10px;
-    background:#44507c; color:#e9efff; cursor:pointer; border:1px solid var(--line);
-  }
+  .cart-btn{ position:relative; display:inline-flex; align-items:center; justify-content:center; width:42px; height:42px; border-radius:10px; margin-right:10px; background:#44507c; color:#e9efff; cursor:pointer; border:1px solid var(--line) }
   .cart-btn:hover{ background:#3b486f }
-  .cart-btn .badge{
-    position:absolute; top:-6px; right:-6px; display:none;
-    background:#e03131; color:#fff; font-weight:800; font-size:11px; line-height:1;
-    padding:4px 6px; border-radius:999px; min-width:18px; text-align:center;
-    box-shadow:0 0 0 2px var(--panel);
-  }
+  .cart-btn .badge{ position:absolute; top:-6px; right:-6px; display:none; background:#e03131; color:#fff; font-weight:800; font-size:11px; line-height:1; padding:4px 6px; border-radius:999px; min-width:18px; text-align:center; box-shadow:0 0 0 2px var(--panel) }
 
-  /* ===== Toolbar ===== */
-  .toolbar{
-    position:relative; z-index:1; max-width:1280px; margin:18px auto 8px; padding:14px 16px;
-    background:var(--panel); border:1px solid var(--line); border-radius:14px;
-    display:grid; grid-template-columns: auto 1fr auto auto auto; gap:10px;
-    align-items:end;
-  }
+  .toolbar{ position:relative; z-index:1; max-width:1280px; margin:18px auto 8px; padding:14px 16px; background:var(--panel); border:1px solid var(--line); border-radius:14px; display:grid; grid-template-columns: auto 1fr auto auto auto; gap:10px; align-items:end }
   .toolbar label{color:#cfe0ff; font-size:12px; display:block; margin-bottom:6px}
-  input,select,button{
-    padding:10px 12px; border-radius:10px; border:1px solid var(--line);
-    background:#f6f8ff; color:#111; outline:none;
-  }
+  input,select,button{ padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:#f6f8ff; color:#111; outline:none }
   input::placeholder{color:#8088a8}
   .btn{cursor:pointer; background:var(--btn); color:var(--ink-inv); border:none; font-weight:700; border-radius:10px; padding:10px 14px}
   .btn:hover{background:var(--btn-hover)}
@@ -85,12 +55,7 @@
   #search{width:min(720px, 100%)}
   #btnClearSearch{white-space:nowrap}
 
-  /* Logo mini (somente imagem, maior, sem texto) */
-  .brand-mini{
-    display:flex; align-items:center; justify-content:center;
-    padding:6px 10px 2px;
-    background:#2f395a; border:1px solid var(--line); border-radius:12px;
-  }
+  .brand-mini{ display:flex; align-items:center; justify-content:center; padding:6px 10px 2px; background:#2f395a; border:1px solid var(--line); border-radius:12px }
   .brand-mini img{height:56px; display:block}
 
   main{position:relative; z-index:1; max-width:1280px; margin:8px auto 120px; padding:0 16px}
@@ -107,32 +72,16 @@
   .price{background:#2f395e; color:#e9f2ff; border:1px solid #243055; width:100%}
   .qty{background:#eef3ff; width:100%}
 
-  .include-btn{
-    width:100%; padding:12px 14px; border-radius:12px; font-weight:800;
-    background:var(--btn); color:#fff; border:none; cursor:pointer;
-    box-shadow:0 2px 0 0 #425fb5; white-space:nowrap;
-  }
+  .include-btn{ width:100%; padding:12px 14px; border-radius:12px; font-weight:800; background:var(--btn); color:#fff; border:none; cursor:pointer; box-shadow:0 2px 0 0 #425fb5; white-space:nowrap }
   .include-btn:hover{background:var(--btn-hover)}
   .include-btn[data-on="1"]{background:#e03131; box-shadow:0 2px 0 0 #932020}
   .include-btn[data-on="1"]:hover{background:#c22020}
 
-  .placeholder{
-    margin:24px auto 0; padding:16px; border:1px dashed #9fb3ff; border-radius:12px;
-    text-align:center; color:#3a4266; background:#f0f4ff; max-width:900px
-  }
+  .placeholder{ margin:24px auto 0; padding:16px; border:1px dashed #9fb3ff; border-radius:12px; text-align:center; color:#3a4266; background:#f0f4ff; max-width:900px }
 
-  /* ===== Overlays ===== */
-  .overlay{
-    position:fixed; inset:0; background:rgba(18,24,40,.6);
-    display:none; align-items:flex-start; justify-content:center; z-index:50;
-  }
+  .overlay{ position:fixed; inset:0; background:rgba(18,24,40,.6); display:none; align-items:flex-start; justify-content:center; z-index:50 }
   .overlay.show{display:flex}
-  .sheet{
-    margin:24px; max-width:1180px; width:100%;
-    background:#e8eeff; border:1px solid #a3b0ff; border-radius:14px;
-    box-shadow:0 10px 40px rgba(0,0,0,.35); overflow:hidden;
-    display:flex; flex-direction:column; max-height:92vh;
-  }
+  .sheet{ margin:24px; max-width:1180px; width:100%; background:#e8eeff; border:1px solid #a3b0ff; border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,.35); overflow:hidden; display:flex; flex-direction:column; max-height:92vh }
   .sheet header{position:sticky; top:0; background:#e8eeff; border-bottom:1px solid #a3b0ff; z-index:1}
   .sheet header .bar{display:flex; gap:8px; align-items:center; justify-content:space-between; padding:12px 16px}
   .sheet header h3{margin:0; font-size:18px; color:#222}
@@ -146,50 +95,31 @@
   .sel-item .info h4{margin:0 0 6px; font-size:15px}
   .sel-item .info .row{display:flex; gap:24px; font-size:13px}
 
-  .tbl{
-    width:100%; border-collapse:separate; border-spacing:0; margin-top:12px; background:#fff;
-    border:1px solid var(--black); border-radius:10px; overflow:hidden
-  }
+  .tbl{ width:100%; border-collapse:separate; border-spacing:0; margin-top:12px; background:#fff; border:1px solid var(--black); border-radius:10px; overflow:hidden }
   .tbl th,.tbl td{border:1px solid var(--black); padding:8px}
   .tbl th{background:#eef2ff; text-align:left}
   .right{text-align:right; font-variant-numeric:tabular-nums}
   .tbl tfoot td{font-weight:800}
   .tbl tr{break-inside:avoid}
 
-  /* ===== Impressão ===== */
   @media print{
     @page{ size:A4 landscape; margin:12mm }
-    html,body{ background:#fff }
-    body::after{ display:none }
-
-    header,.toolbar,.placeholder,#catalog,.grid,.card,
-    .overlay:not(.print){ display:none !important }
-
-    .overlay.print{
-      display:block !important; position:static !important; background:transparent !important;
-      -webkit-print-color-adjust:exact; print-color-adjust:exact;
-    }
-    .overlay.print .sheet{
-      margin:0; border:none; border-radius:0; box-shadow:none;
-      max-height:none; overflow:visible; width:100% !important; max-width:100% !important;
-    }
+    html,body{ background:#fff } body::after{ display:none }
+    header,.toolbar,.placeholder,#catalog,.grid,.card,.overlay:not(.print){ display:none !important }
+    .overlay.print{ display:block !important; position:static !important; background:transparent !important; -webkit-print-color-adjust:exact; print-color-adjust:exact }
+    .overlay.print .sheet{ margin:0; border:none; border-radius:0; box-shadow:none; max-height:none; overflow:visible; width:100% !important; max-width:100% !important }
     .overlay.print .sheet header{ position:static; border-bottom:0; padding:6mm 0 2mm }
     .overlay.print .sheet .content{ overflow:visible; padding:0 2mm }
   }
 
-  /* ===== Mobile ===== */
   @media (max-width: 768px){
     body{ background:#0e1b3f }
     .toolbar{ grid-template-columns: 1fr; gap:12px }
     .toolbar > div{ width:100% }
-    .brand-mini{ justify-content:center }
-    .brand-mini img{ height:42px }
-    .search-wrap{ flex-direction: column; align-items: stretch; gap:8px }
-    #search{ width:100%; font-size:16px; padding:12px 14px }
-    #btnClearSearch, #btnClear{ width:100% }
-    .grid{ grid-template-columns:1fr }
-    .sheet{ margin:12px; max-height:90vh }
-    .sel-grid{ grid-template-columns:1fr }
+    .brand-mini{ justify-content:center } .brand-mini img{ height:42px }
+    .search-wrap{ flex-direction: column; align-items: stretch; gap:8px } #search{ width:100%; font-size:16px; padding:12px 14px }
+    #btnClearSearch, #btnClear{ width:100% } .grid{ grid-template-columns:1fr }
+    .sheet{ margin:12px; max-height:90vh } .sel-grid{ grid-template-columns:1fr }
   }
 </style>
 </head>
@@ -203,9 +133,7 @@
     </div>
 
     <div class="cart-btn" id="btnCart" title="Abrir carrinho" aria-label="Abrir carrinho">
-      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-        <path fill="currentColor" d="M7 4H5L4 6v2h2l3.6 7.59-1.35 2.41A2 2 0 0 0 10 20h10v-2H10l1.1-2h6.45c.75 0 1.41-.41 1.75-1.03L22 9H7.42l-.94-2H7V4Zm2 16a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/>
-      </svg>
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M7 4H5L4 6v2h2l3.6 7.59-1.35 2.41A2 2 0 0 0 10 20h10v-2H10l1.1-2h6.45c.75 0 1.41-.41 1.75-1.03L22 9H7.42l-.94-2H7V4Zm2 16a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/></svg>
       <span class="badge" id="cartBadge">0</span>
     </div>
 
@@ -216,10 +144,7 @@
 </header>
 
 <section class="toolbar">
-  <!-- Logo maior, sem texto -->
-  <div class="brand-mini" aria-hidden="true">
-    <img src="imagens/logo-branca.png" alt="" />
-  </div>
+  <div class="brand-mini" aria-hidden="true"><img src="imagens/logo-branca.png" alt="" /></div>
 
   <div class="search-wrap">
     <div style="flex:1">
@@ -262,7 +187,7 @@
   <section id="catalog" class="grid"></section>
 </main>
 
-<!-- Preview / Fechar orçamento -->
+<!-- Preview (opcional) -->
 <div class="overlay" id="overlay">
   <div class="sheet" id="sheet">
     <header>
@@ -335,7 +260,7 @@
 
 <script>
 /* ===== Config ===== */
-const TARIFA_KM = 1.6; // custo por Km (deslocamento)
+const TARIFA_KM = 1.6;
 
 /* ===== Helpers ===== */
 const money = v => isFinite(v) ? v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '-';
@@ -346,7 +271,7 @@ const parseBR = s => {
   return Number.isFinite(n)? n:0;
 };
 
-/* ===== Imagens com fallback ===== */
+/* ===== Imagens com fallback (pasta /imagens) ===== */
 function candidatesFor(nome){
   const raw = String(nome||'').trim();
   const noAcc = raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -363,14 +288,15 @@ function loadImageWithFallback(img, list, i=0){
   img.src=list[i];
 }
 
-/* ===== Estado ===== */
+/* ===== Estado / DOM ===== */
 const state={ uf:'PR', km:0, all:[], filtered:[] };
 
-/* ===== DOM ===== */
 const $=(s,e=document)=>e.querySelector(s);
 const catalog=$('#catalog'), hint=$('#hint'), inputSearch=$('#search'), selectUF=$('#uf'), inputKM=$('#km');
 const btnClear=$('#btnClear'), btnClearSearch=$('#btnClearSearch');
-const btnCloseQuote=$('#btnCloseQuote'), overlay=$('#overlay'), btnPrint=$('#btnPrint'), btnBack=$('#btnBack');
+const btnCloseQuote=$('#btnCloseQuote');
+
+const overlay=$('#overlay'), btnBack=$('#btnBack'), btnPrint=$('#btnPrint');
 const selGrid=$('#selGrid'), tbody=$('#tbody'), subLiq=$('#subLiq'), subImp=$('#subImp'), totGeral=$('#totGeral'), meta=$('#meta'), sug=$('#sug');
 
 const btnCart=$('#btnCart'), cartBadge=$('#cartBadge');
@@ -394,18 +320,15 @@ async function loadDataByUF(uf){
     })).filter(x=>x.nome);
 
     sug.innerHTML=state.all.map(it=>`<option value="${it.nome}">`).join('');
-
-    state.filtered = [];
-    renderCards();
-    hint.style.display='block';
-    hint.textContent='Use a busca acima para listar os modelos.';
+    state.filtered=[]; renderCards();
+    hint.style.display='block'; hint.textContent='Use a busca acima para listar os modelos.';
     updateCartBadge();
   }catch(err){
     console.error('Falha ao carregar catálogo:', err);
-    state.all = []; state.filtered = [];
+    state.all=[]; state.filtered=[];
     renderCards();
-    hint.textContent = `Não foi possível carregar ${url}. Verifique se o arquivo existe na pasta "data/".`;
-    hint.style.display = 'block';
+    hint.textContent = `Não foi possível carregar ${url}. Verifique a pasta "data/".`;
+    hint.style.display='block';
   }
 }
 
@@ -429,15 +352,11 @@ function renderCards(){
       <div class="row">
         <div style="max-width:170px"><label>Quantidade</label><input class="qty" type="number" min="1" step="1" value="${it.qty}"></div>
         <div style="display:flex;align-items:flex-end">
-          <button class="include-btn" data-on="${it.incluir?1:0}">
-            ${it.incluir?'Remover':'Adicionar ao carrinho'}
-          </button>
+          <button class="include-btn" data-on="${it.incluir?1:0}">${it.incluir?'Remover':'Adicionar ao carrinho'}</button>
         </div>
-      </div>
-    `;
+      </div>`;
     body.querySelector('.qty').addEventListener('input',e=>{
-      const v=Math.max(1,parseInt(e.target.value||'1',10)); it.qty=v; e.target.value=v;
-      updateCartBadge();
+      const v=Math.max(1,parseInt(e.target.value||'1',10)); it.qty=v; e.target.value=v; updateCartBadge();
     });
     const btn=body.querySelector('.include-btn');
     btn.addEventListener('click',()=>{
@@ -447,7 +366,6 @@ function renderCards(){
       card.dataset.selected=it.incluir?'1':'0';
       updateCartBadge();
     });
-
     card.append(media,body); catalog.appendChild(card);
   });
 }
@@ -455,19 +373,15 @@ function renderCards(){
 /* ===== Busca ===== */
 function applyFilter(){
   const q=inputSearch.value.trim().toLowerCase();
-  if(q.length<1){
-    state.filtered = [];
-    renderCards();
-    return;
-  }
+  if(q.length<1){ state.filtered = []; renderCards(); return; }
   state.filtered = state.all.filter(it=>it.nome.toLowerCase().includes(q));
   renderCards();
 }
 
-/* ===== Preview (Fechar orçamento) ===== */
+/* ===== Preview (opcional) ===== */
 function buildPreview(){
   const km = Math.max(0, parseInt(inputKM.value||'0',10));
-  const custo = km * TARIFA_KM; // custo somado apenas no 1º item
+  const custo = km * TARIFA_KM; // somado apenas no 1º item
   const itensSel = state.all.filter(it=>it.incluir);
 
   selGrid.innerHTML=''; tbody.innerHTML='';
@@ -481,11 +395,9 @@ function buildPreview(){
     return;
   }
 
-  // cartões acima da tabela (sem mencionar custo)
   itensSel.forEach((it,idx)=>{
     const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
     const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
-
     const box=document.createElement('div'); box.className='sel-item';
     box.innerHTML=`
       <div class="imgbox"><img alt="${it.nome}"></div>
@@ -493,27 +405,18 @@ function buildPreview(){
         <h4>${it.nome}</h4>
         <div class="row"><div>Valor líquido: <b>${money(it.ad)}</b></div><div>Valor c/ impostos: <b>${money(it.an)}</b></div></div>
         <div class="row"><div>Total líquido: <b>${money(totalLiq)}</b></div><div>Total c/ impostos: <b>${money(totalImp)}</b></div></div>
-        <div>Qtd: <b>${it.qty}</b></div>
-      </div>
-    `;
+        <div>Qtd: <b>${it.qty}</b></div>`;
     const img=box.querySelector('img'); loadImageWithFallback(img,candidatesFor(it.nome));
     selGrid.appendChild(box);
   });
 
-  // tabela (apenas Qtd, Total líquido, Total c/ impostos)
   let subtotalLiq=0, subtotalImp=0;
   itensSel.forEach((it,idx)=>{
     const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
     const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
     subtotalLiq += totalLiq; subtotalImp += totalImp;
-
     const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td>${it.nome}</td>
-      <td class="right">${it.qty}</td>
-      <td class="right">${money(totalLiq)}</td>
-      <td class="right">${money(totalImp)}</td>
-    `;
+    tr.innerHTML=`<td>${it.nome}</td><td class="right">${it.qty}</td><td class="right">${money(totalLiq)}</td><td class="right">${money(totalImp)}</td>`;
     tbody.appendChild(tr);
   });
 
@@ -547,15 +450,11 @@ function buildCart(){
   itensSel.forEach((it, idx)=>{
     const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
     const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
-
     const box=document.createElement('div'); box.className='sel-item';
-    box.innerHTML=`
-      <div class="imgbox"><img alt="${it.nome}"></div>
-      <div class="info">
-        <h4>${it.nome}</h4>
-        <div class="row"><div>Total Líq.: <b>${money(totalLiq)}</b></div><div>Total c/ Imp.: <b>${money(totalImp)}</b></div></div>
-        <div>Qtd: <b>${it.qty}</b></div>
-      </div>`;
+    box.innerHTML=`<div class="imgbox"><img alt="${it.nome}"></div>
+      <div class="info"><h4>${it.nome}</h4>
+      <div class="row"><div>Total Líq.: <b>${money(totalLiq)}</b></div><div>Total c/ Imp.: <b>${money(totalImp)}</b></div></div>
+      <div>Qtd: <b>${it.qty}</b></div></div>`;
     const img=box.querySelector('img'); loadImageWithFallback(img,candidatesFor(it.nome));
     cartSelGrid.appendChild(box);
   });
@@ -565,14 +464,12 @@ function buildCart(){
     const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
     const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
     subtotalLiq += totalLiq; subtotalImp += totalImp;
+
     const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td>${it.nome}</td>
-      <td class="right">${it.qty}</td>
-      <td class="right">${money(totalLiq)}</td>
-      <td class="right">${money(totalImp)}</td>`;
+    tr.innerHTML=`<td>${it.nome}</td><td class="right">${it.qty}</td><td class="right">${money(totalLiq)}</td><td class="right">${money(totalImp)}</td>`;
     cartTbody.appendChild(tr);
   });
+
   cartSubLiq.textContent = `Subtotal valor líquido       ${money(subtotalLiq)}`;
   cartSubImp.textContent  = `Subtotal valor c/ impostos   ${money(subtotalImp)}`;
   cartTotGeral.textContent= `Total geral                   ${money(subtotalImp)}`;
@@ -581,51 +478,61 @@ function buildCart(){
 /* ===== Eventos ===== */
 inputSearch.addEventListener('input',applyFilter);
 btnClearSearch.addEventListener('click',()=>{ inputSearch.value=""; applyFilter(); });
+selectUF.addEventListener('change',async()=>{ state.uf=selectUF.value; await loadDataByUF(state.uf); applyFilter(); });
+inputKM.addEventListener('input',e=>{ state.km=Math.max(0,parseInt(e.target.value||'0',10)); });
 
-selectUF.addEventListener('change',async()=>{
-  state.uf=selectUF.value;
-  await loadDataByUF(state.uf);
-  applyFilter();
-});
-
-inputKM.addEventListener('input',e=>{state.km=Math.max(0,parseInt(e.target.value||'0',10));});
-
-/* Limpar carrinho (com confirmação) */
 btnClear.addEventListener('click',()=>{
   const temItens = state.all.some(it => it.incluir);
   if(!temItens){ alert('O carrinho já está vazio.'); return; }
-  const ok = confirm('Tem certeza que deseja LIMPAR o carrinho?\nTodos os itens selecionados serão removidos.');
-  if(!ok) return;
-  state.all.forEach(it=>{it.incluir=0; it.qty=1;});
-  state.filtered.forEach(it=>{it.incluir=0; it.qty=1;});
+  if(!confirm('Tem certeza que deseja LIMPAR o carrinho?')) return;
+  state.all.forEach(it=>{it.incluir=0; it.qty=1;}); state.filtered.forEach(it=>{it.incluir=0; it.qty=1;});
   renderCards(); updateCartBadge();
 });
 
-/* Abrir/fechar carrinho */
+/* Carrinho */
 btnCart.addEventListener('click',()=>{ buildCart(); cartOverlay.classList.add('show'); });
 btnCloseCart.addEventListener('click',()=> cartOverlay.classList.remove('show'));
 
-/* Overlay de orçamento + impressão */
-btnCloseQuote.addEventListener('click',()=>{ buildPreview(); overlay.classList.add('show'); });
+/* Preview opcional (não usamos no fluxo principal) */
 btnBack.addEventListener('click',()=>overlay.classList.remove('show'));
-
-function doPrintOverlay(){
+btnPrint.addEventListener('click',()=>{
   overlay.classList.add('print');
-  setTimeout(()=>window.print(), 50);
-}
-btnPrint.addEventListener('click', doPrintOverlay);
+  setTimeout(()=>window.print(),50);
+});
 window.addEventListener('afterprint', ()=> overlay.classList.remove('print'));
-if(window.matchMedia){
-  const mql = window.matchMedia('print');
-  const onChange = e => { if(!e.matches){ overlay.classList.remove('print'); } };
-  if(mql.addEventListener) mql.addEventListener('change', onChange);
-  else if(mql.addListener) mql.addListener(onChange);
+
+/* ===== Fechar orçamento -> salva sessão e abre proposta.html ===== */
+function coletarDadosParaProposta(){
+  const km = Math.max(0, parseInt(document.querySelector('#km').value||'0',10));
+  const uf = document.querySelector('#uf').value;
+  const frete = km * TARIFA_KM; // embutir no 1º item (líq e imp)
+
+  const itensSel = state.all.filter(it=>it.incluir);
+  const itens = itensSel.map((it, idx) => ({
+    nome: it.nome,
+    qty: it.qty,
+    unit_liq: it.ad,
+    unit_imp: it.an,
+    img_cands: candidatesFor(it.nome),
+    frete_liq: idx===0 ? frete : 0,
+    frete_imp: idx===0 ? frete : 0
+  }));
+
+  return { uf, km, data: new Date().toISOString(), itens };
 }
+
+btnCloseQuote.addEventListener('click', ()=>{
+  const dados = coletarDadosParaProposta();
+  if(!dados.itens || dados.itens.length===0){
+    alert('Selecione ao menos 1 item para gerar a proposta.');
+    return;
+  }
+  sessionStorage.setItem('propostaData', JSON.stringify(dados));
+  window.location.href = 'proposta.html';
+});
 
 /* ===== Boot ===== */
-(async function init(){
-  await loadDataByUF(state.uf);   // inicia vazio; só aparece ao pesquisar
-})();
+(async function init(){ await loadDataByUF(state.uf); })();
 </script>
 </body>
 </html>
