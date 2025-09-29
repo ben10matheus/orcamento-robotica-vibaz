@@ -6,31 +6,29 @@
 <title>Proposta - VIBAZ</title>
 <style>
   /* Página 6 - força cada cartão a ser coluna única */
-#pagina6 .itemcard {
-  display: block !important;    /* ignora o grid da pág. 4 */
-  border: none !important;      /* se não quiser borda do card */
-  margin-bottom: 8px;
-}
-
-/* Título centralizado em uma linha */
-#pagina6 .itemname {
-  white-space: nowrap;      /* não deixa quebrar linha */
-  text-align: center;
-  font-weight: 800;
-  font-size: 14px;
-  margin-bottom: 4px;
-}
-
-/* Descrição limpa */
-#pagina6 .writebox {
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 auto !important;
-  min-height: auto !important;
-  font-size: 13px;
-  line-height: 1.5;
-  text-align: center;
-}
+  #pagina6 .itemcard {
+    display: block !important;
+    border: none !important;
+    margin-bottom: 8px;
+  }
+  /* Título centralizado em uma linha */
+  #pagina6 .itemname {
+    white-space: nowrap;
+    text-align: center;
+    font-weight: 800;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  /* Descrição limpa */
+  #pagina6 .writebox {
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    min-height: auto !important;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+  }
 
   /* Margem estreita (Word "Narrow") nas laterais na impressão */
   @page { size: A4; margin: 0 12.7mm; }
@@ -75,11 +73,15 @@
   .box h3{ margin:0 0 3mm; font-size:14px }
 
   .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:4mm }
+  .grid-1{ display:grid; grid-template-columns:1fr; gap:4mm }
+
   label{ display:block; font-size:12px; margin-bottom:1mm }
   input{
     width:100%; border:1px solid #dfe3ff; border-radius:8px; padding:7px 9px; background:#fbfcff;
     transform:scale(0.9); transform-origin:left center; display:inline-block;
   }
+  /* alinhar inputs lado a lado (Telefone + Cidade) com o restante */
+  .grid-2 input{ width:95%; box-sizing:border-box }
 
   .frase{ margin:5mm 0 0; font-size:13px }
   .strong{ font-weight:800 }
@@ -117,7 +119,8 @@
     color:#647096; user-select:none;
   }
   /* esconder input nativo e estilizar botão custom */
-  #drop input[type="file"]{ display:none !important; }
+  #drop input[type="file"],
+  #drop3 input[type="file"]{ display:none !important; }
   .dropzone .btn{
     background:#44507c; color:#fff; border:1px solid #cfd7ff;
     border-radius:10px; padding:8px 12px; cursor:pointer
@@ -126,12 +129,11 @@
 
   .preview{
     flex:1 1 auto; min-height:0;
-    display:grid; grid-template-columns:1fr 1fr; gap:4mm; /* 2x2 quando 4 imagens */
+    display:grid; grid-template-columns:1fr 1fr; gap:4mm;
   }
   .imgcard{ position:relative; border:1px solid #cfd7ff; border-radius:10px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#fff }
   .imgcard img{ max-width:100%; max-height:100%; display:block; object-fit:contain }
   .imgremove{ position:absolute; top:6px; right:6px; background:#0008; color:#fff; border:none; border-radius:8px; padding:6px 8px; font-size:12px; cursor:pointer }
-  .placeholder{ color:#9aa3c7; text-align:center; padding:10mm 0; border:1px dashed #cfd7ff; border-radius:10px }
 
   @media print{ .dropzone,.imgremove{ display:none !important } .imgcard{ border:none } }
 
@@ -189,54 +191,58 @@
   .frete-pop__box h3{ margin:0 0 6px }
   .frete-pop__box p{ margin:0 0 12px; line-height:1.4 }
   @media print{ .frete-pop{ display:none !important } }
-  /* Pop-up CNPJ inválido */
-.popup {
-  position: fixed;
-  inset: 0;
-  background: rgba(18,24,40,.6);
-  display: grid;
-  place-items: center;
-  z-index: 9999;
-}
-.popup[hidden] { display: none; }
-.popup__box {
-  width: min(420px, 92vw);
-  background: #fff;
-  border: 1px solid #cfd7ff;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 10px 40px rgba(0,0,0,.35);
-  color: #0e1222;
-}
-.popup__box h3 { margin: 0 0 6px; }
-.popup__box p { margin: 0 0 12px; line-height: 1.4; }
-@media print { .popup { display: none !important } }
 
+  /* Pop-up CNPJ inválido */
+  .popup{
+    position: fixed; inset: 0; background: rgba(18,24,40,.6);
+    display: grid; place-items: center; z-index: 9999;
+  }
+  .popup[hidden]{ display:none }
+  .popup__box{
+    width:min(420px, 92vw); background:#fff; border:1px solid #cfd7ff; border-radius:12px;
+    padding:16px; box-shadow:0 10px 40px rgba(0,0,0,.35); color:#0e1222;
+  }
+  .popup__box h3{ margin:0 0 6px }
+  .popup__box p{ margin:0 0 12px; line-height:1.4 }
+  @media print { .popup { display: none !important } }
 </style>
 </head>
 <body>
 
 <!-- ==================== PÁGINA 1 ==================== -->
-
 <section class="page page-1" id="pagina1">
   <div class="head"><img src="prop/cabecalho_prop.png" alt="Cabeçalho (3 logos)"></div>
   <div class="title">
     <div class="meta" id="dataHoje">Segunda-feira, XX de XXXXXX de 2025 • Certificado ISO 9001:2015</div>
     <h1>PROPOSTA TÉCNICA COMERCIAL</h1>
   </div>
+
   <section class="box">
     <h3>DADOS DO CLIENTE</h3>
-    <div class="grid-2">
+
+    <div class="grid-1">
       <div><label>Empresa</label><input id="cliEmpresa"></div>
+    </div>
+    <div class="grid-1">
       <div><label>Contato</label><input id="cliContato"></div>
-      <div><label>Telefone</label><input id="cliFone"></div>
+    </div>
+    <div class="grid-1">
       <div><label>E-mail</label><input id="cliEmail"></div>
-      <div><label>Cidade</label><input id="cliCidade"></div>
+    </div>
+    <div class="grid-1">
       <div><label>Orçamento</label><input id="cliOrc" placeholder="ex.: 2025-00123"></div>
-      <!-- NOVO CAMPO -->
+    </div>
+
+    <div class="grid-2">
+      <div><label>Telefone</label><input id="cliFone"></div>
+      <div><label>Cidade</label><input id="cliCidade"></div>
+    </div>
+
+    <div class="grid-1">
       <div><label>CNPJ</label><input id="cliCNPJ" placeholder="00.000.000/0000-00"></div>
     </div>
   </section>
+
   <div class="capa"><img src="prop/capa_prop.png" alt="Capa da proposta"></div>
   <section class="frase">
     A Vibaz agradece sua confiança e a oportunidade de apoiar sua necessidade.
@@ -244,25 +250,21 @@
     fale com nosso time comercial. <span class="strong">Departamento Comercial VIBAZ.</span>
   </section>
 
-  <!-- Assinaturas na página 1 -->
   <div class="sigs">
     <div class="sig">
       <div class="nm">Solange Bahri</div>
-      Diretora Comercial<br>
-      Cel.: 41 9 8829-6858<br>
+      Diretora Comercial<br> Cel.: 41 9 8829-6858<br>
       E-mail: Solange.b@vibaz.com.br
     </div>
     <div class="sig">
       <div class="nm">Max Borges Merizzio</div>
-      Gerente Geral<br>
-      Cel.: 41 9 9848-0830<br>
+      Gerente Geral<br> Cel.: 41 9 9848-0830<br>
       E-mail: max.m@vibaz.com.br
     </div>
     <div class="sig">
       <div class="nm">Richard Maturana</div>
-      Engenharia<br>
-      Cel.: 41 9 9652-2237<br>
-      E-mail: antonio.p@vibaz.com.br
+      Engenharia<br> Cel.: 41 9 9652-2237<br>
+      E-mail: richard.m@vibaz.com.br
     </div>
   </div>
 
@@ -279,6 +281,7 @@
 </div>
 
 <script>
+/* Validador de CNPJ + pop-up */
 function validarCNPJ(cnpj){
   cnpj = cnpj.replace(/[^\d]+/g,'');
   if(cnpj.length!==14) return false;
@@ -299,7 +302,7 @@ if(cnpjInput){
   });
 }
 if(ok){ ok.addEventListener('click',()=>pop.hidden=true); }
-pop.addEventListener('click',e=>{ if(e.target===pop) pop.hidden=true; });
+if(pop){ pop.addEventListener('click',e=>{ if(e.target===pop) pop.hidden=true; }); }
 </script>
 
 <!-- ==================== PÁGINA 2 ==================== -->
@@ -314,14 +317,14 @@ pop.addEventListener('click',e=>{ if(e.target===pop) pop.hidden=true; });
 
     <div class="col">
       <div class="uploadbox">
-        <div class="subttl">Imagens (até 4)</div>
+        <div class="subttl">Imagens </div>
         <div id="drop" class="dropzone">
           <input id="fileInput" type="file" accept="image/*" multiple>
           <p><button type="button" class="btn pick">Escolher arquivos</button></p>
           <p>Arraste e solte aqui ou clique para enviar</p>
           <p style="font-size:12px; margin-top:2mm">Formatos: PNG/JPG • Até 4 imagens</p>
         </div>
-        <div id="preview" class="preview"><div class="placeholder">Nenhuma imagem selecionada.</div></div>
+        <div id="preview" class="preview"></div>
       </div>
     </div>
   </div>
@@ -338,6 +341,18 @@ pop.addEventListener('click',e=>{ if(e.target===pop) pop.hidden=true; });
   <h2 class="sec-titulo">Solução proposta</h2>
 
   <div id="editBox3" class="writebox" contenteditable="true"></div>
+
+  <!-- Upload de imagens (igual pág.2) -->
+  <div class="uploadbox" style="margin-top:6mm">
+    <div class="subttl">Imagens </div>
+    <div id="drop3" class="dropzone">
+      <input id="fileInput3" type="file" accept="image/*" multiple>
+      <p><button type="button" class="btn pick3">Escolher arquivos</button></p>
+      <p>Arraste e solte aqui ou clique para enviar</p>
+      <p style="font-size:12px; margin-top:2mm">Formatos: PNG/JPG • Até 4 imagens</p>
+    </div>
+    <div id="preview3" class="preview"></div>
+  </div>
 
   <div class="important-title">Importante:</div>
   <p class="important-text">
@@ -356,56 +371,12 @@ pop.addEventListener('click',e=>{ if(e.target===pop) pop.hidden=true; });
 <section class="page page-4" id="pagina4">
   <div class="head"><img src="prop/cabecalho_prop.png" alt="Cabeçalho (3 logos)"></div>
   <h2 class="sec-titulo-4">Descrição</h2>
-
-  <!-- Os cards são montados pelo JS original.
-       Este container permanece o mesmo; o script abaixo injeta o campo de descrição dentro de cada card. -->
   <div id="itensLista" class="itens"></div>
-
   <footer class="footer">
     <div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div>
     <div class="pageno">4</div>
   </footer>
 </section>
-
-<!-- Script específico da página 4:
-     - Para cada .itemcard (grid já existente: [imagem | info]),
-       adiciona um <div class="writebox desc4" contenteditable="true"> logo abaixo do título, NA COLUNA DA DIREITA. -->
-<script>
-(function(){
-  const container = document.getElementById('itensLista');
-  if(!container) return;
-
-  function injectDesc(){
-    // percorre todos os cartões já renderizados
-    document.querySelectorAll('#pagina4 .itemcard').forEach((card)=>{
-      // coluna 0 = imagem, coluna 1 = infos (onde fica o título)
-      const infoCol = card.children && card.children[1];
-      if(!infoCol) return;
-
-      // evita duplicar se já houver
-      if(infoCol.querySelector('.writebox.desc4')) return;
-
-      // cria o campo editável logo abaixo do título
-      const desc = document.createElement('div');
-      desc.className = 'writebox desc4';
-      desc.setAttribute('contenteditable','true');
-      desc.style.minHeight = '28mm';
-      desc.style.marginTop = '3mm';
-      // deixa vazio para ativar seu placeholder global: .writebox:empty:before { content:"Digite aqui..." }
-      infoCol.appendChild(desc);
-    });
-  }
-
-  // injeta na carga inicial
-  injectDesc();
-
-  // como os itens podem ser (re)montados por outro script, observa mudanças no container
-  const mo = new MutationObserver(()=>injectDesc());
-  mo.observe(container, { childList:true });
-
-})();
-</script>
-
 
 <!-- ==================== PÁGINA 5 – Itens e investimento ==================== -->
 <section class="page page-5" id="pagina5">
@@ -452,85 +423,25 @@ pop.addEventListener('click',e=>{ if(e.target===pop) pop.hidden=true; });
 </section>
 
 <!-- ==================== PÁGINA 6 – Qualidade Assegurada vs Garantia ==================== -->
-<!-- ==================== PÁGINA 6 – Qualidade Assegurada vs Garantia ==================== -->
 <section class="page page-6" id="pagina6">
   <div class="head"><img src="prop/cabecalho_prop.png" alt="Cabeçalho (3 logos)"></div>
-
   <h2 class="sec-titulo-6">Qualidade Assegurada versus Garantia</h2>
   <div class="garantia">
     <p>Este descritivo detalha os termos e condições da garantia oferecida para os equipamentos; nosso compromisso é fornecer equipamentos de alta qualidade e assegurar a satisfação de nossos clientes.</p>
     <p>Contempla-se a garantia de <b>12 meses</b>, a partir da <b>entrega via nota fiscal</b>.</p>
     <p>Esta garantia cobre <b>defeitos de fabricação</b>.</p>
     <p>Os seguintes componentes são cobertos por esta garantia:</p>
-
-    <!-- Lista de cartões sincronizados da Página 4 -->
     <div id="descPag6Lista" class="itens"></div>
   </div>
-
   <footer class="footer">
     <div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div>
     <div class="pageno">6</div>
   </footer>
 </section>
 
-<script>
-(function(){
-  const lista6 = document.getElementById('descPag6Lista');
-  if(!lista6) return;
-
-  function syncFromPage4(){
-    lista6.innerHTML = ''; // limpa antes de recriar
-
-    document.querySelectorAll('#pagina4 .itemcard').forEach((card)=>{
-      const info = card.children && card.children[1];
-      if(!info) return;
-      const title = info.querySelector('.itemname')?.textContent || 'Item sem nome';
-      const desc  = info.querySelector('.desc4')?.innerHTML || '&nbsp;';
-
-      const card6 = document.createElement('div');
-      card6.className = 'itemcard';
-
-      const box = document.createElement('div');
-      box.style.display = 'flex';
-      box.style.flexDirection = 'column';
-
-      const name = document.createElement('div');
-      name.className = 'itemname';
-      name.textContent = title;
-
-      const descBox = document.createElement('div');
-      descBox.className = 'writebox';
-      descBox.innerHTML = desc;
-
-      box.appendChild(name);
-      box.appendChild(descBox);
-
-      card6.appendChild(box);
-      lista6.appendChild(card6);
-    });
-  }
-
-  // Observa mudanças no container da pág. 4 (quando os itens forem carregados)
-  const cont4 = document.getElementById('itensLista');
-  if(cont4){
-    const mo = new MutationObserver(()=>syncFromPage4());
-    mo.observe(cont4, { childList:true, subtree:true });
-  }
-
-  // sincroniza também sempre que digitar na pág. 4
-  document.addEventListener('input', (e)=>{
-    if(e.target && e.target.classList && e.target.classList.contains('desc4')){
-      syncFromPage4();
-    }
-  });
-})();
-</script>
-
-
 <!-- ==================== PÁGINA 7 – Exclusões da Garantia ==================== -->
 <section class="page page-7" id="pagina7">
   <div class="head"><img src="prop/cabecalho_prop.png" alt="Cabeçalho (3 logos)"></div>
-
   <h2 class="sec-titulo-7">Exclusões da Garantia:</h2>
   <div class="guia">
     <p>Esta garantia não cobre os seguintes:</p>
@@ -543,16 +454,11 @@ pop.addEventListener('click',e=>{ if(e.target===pop) pop.hidden=true; });
       <li>Falhas ocasionadas por variação de tensão de energia elétrica.</li>
       <li>Despesas relacionadas a tempo de inatividade da máquina ou perdas financeiras resultantes de falhas.</li>
     </ul>
-
     <h3 class="sec-titulo">Observação:</h3>
-    <p>
-      A garantia não abrange consumíveis de solda, peças de desgaste (tochas, tubos, cabos, entre outros)
-      nem possíveis problemas decorrentes da utilização indevida dos equipamentos.
-    </p>
+    <p>A garantia não abrange consumíveis de solda, peças de desgaste (tochas, tubos, cabos, entre outros) nem possíveis problemas decorrentes da utilização indevida dos equipamentos.</p>
     <p>Os custos de deslocamento e alojamento dos técnicos não estão incluídos; estes custos são de responsabilidade do cliente.</p>
     <p>O cliente deve indicar pessoas capacitadas para o correto uso dos equipamentos.</p>
   </div>
-
   <footer class="footer">
     <div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div>
     <div class="pageno">7</div>
@@ -562,7 +468,6 @@ pop.addEventListener('click',e=>{ if(e.target===pop) pop.hidden=true; });
 <!-- ==================== PÁGINA 8 – Serviços ==================== -->
 <section class="page page-8" id="pagina8">
   <div class="head"><img src="prop/cabecalho_prop.png" alt="Cabeçalho (3 logos)"></div>
-
   <h2 class="sec-titulo-8">Serviços</h2>
   <div class="srv">
     <h3>Treinamento</h3>
@@ -571,42 +476,34 @@ pop.addEventListener('click',e=>{ if(e.target===pop) pop.hidden=true; });
       <li><b>Em nosso centro de treinamento</b> na Matriz VIBAZ – PR, com custos de viagem, hospedagem e alimentação dos participantes por conta do cliente.</li>
       <li><b>No cliente</b>, com custos de viagem, hospedagem e alimentação do nosso técnico por conta do cliente.</li>
     </ul>
-
     <h3>Programação</h3>
     <p>Poderá ser contratado o serviço de programação à parte, estando a cargo do cliente os custos de viagem, hospedagem e alimentação do técnico Vibaz.</p>
-
     <p class="atenc">Atenciosamente, departamento comercial VIBAZ.</p>
-
-    <!-- Assinaturas -->
     <div class="sigs">
       <div class="sig">
         <div class="nm">Solange Bahri</div>
-        Diretora Comercial<br>
-        Cel.: 41 9 8829-6858<br>
+        Diretora Comercial<br> Cel.: 41 9 8829-6858<br>
         E-mail: Solange.b@vibaz.com.br
       </div>
       <div class="sig">
         <div class="nm">Max Borges Merizzio</div>
-        Gerente Geral<br>
-        Cel.: 41 9 9848-0830<br>
+        Gerente Geral<br> Cel.: 41 9 9848-0830<br>
         E-mail: max.m@vibaz.com.br
       </div>
       <div class="sig">
         <div class="nm">Richard Maturana</div>
-        Engenharia<br>
-        Cel.: 41 9 9652-2237<br>
-        E-mail: antonio.p@vibaz.com.br
+        Engenharia<br> Cel.: 41 9 9652-2237<br>
+        E-mail: richard.m@vibaz.com.br
       </div>
     </div>
   </div>
-
   <footer class="footer">
     <div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div>
     <div class="pageno">8</div>
   </footer>
 </section>
 
-<!-- Botão geral -->
+<!-- Botão geral (não imprime) -->
 <div class="no-print" style="margin-top:12px">
   <button id="btnPrintAll" class="btn">Imprimir proposta</button>
 </div>
@@ -626,187 +523,280 @@ pop.addEventListener('click',e=>{ if(e.target===pop) pop.hidden=true; });
 </div>
 
 <script>
-  /* util moeda */
-  const money = v => isFinite(v) ? v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '-';
+/* util moeda */
+const money = v => isFinite(v) ? v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '-';
 
-  /* Atualiza título da página com nº do orçamento -> vira nome padrão do PDF */
-  function updateDocTitle(){
-    const orc = (document.getElementById('cliOrc')?.value || '').trim();
-    document.title = orc ? `Proposta ${orc} - VIBAZ` : 'Proposta - VIBAZ';
+/* Atualiza título da página com nº do orçamento -> vira nome padrão do PDF */
+function updateDocTitle(){
+  const orc = (document.getElementById('cliOrc')?.value || '').trim();
+  document.title = orc ? `Proposta ${orc} - VIBAZ` : 'Proposta - VIBAZ';
+}
+
+/* Data por extenso (pág.1) */
+(function(){
+  const hoje=new Date();
+  const dias=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+  const meses=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const el=document.getElementById('dataHoje');
+  if(el){ el.textContent = `${dias[hoje.getDay()]}, ${String(hoje.getDate()).padStart(2,'0')} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()} • Certificado ISO 9001:2015`; }
+})();
+
+/* Editáveis (págs.2, 3) + bind do título ao campo Orçamento */
+(function(){
+  ['editBox','editBox3'].forEach(id=>{
+    const box=document.getElementById(id); if(!box) return;
+    box.innerHTML=''; box.addEventListener('input',()=>{ if(box.textContent.trim()===''){ box.innerHTML=''; } });
+  });
+  const orc = document.getElementById('cliOrc');
+  if(orc){
+    updateDocTitle();
+    orc.addEventListener('input', updateDocTitle);
+  }
+  window.addEventListener('beforeprint', updateDocTitle);
+})();
+
+/* Upload de imagens (pág.2) — máx. 4, sem placeholders */
+(function(){
+  const MAX = 4;
+  const dz=document.getElementById('drop'), input=document.getElementById('fileInput'), preview=document.getElementById('preview');
+  if(!dz||!input||!preview) return; let images=[];
+  const pickBtn = dz.querySelector('.pick');
+  if (pickBtn) pickBtn.addEventListener('click', (e)=>{ e.preventDefault(); input.click(); });
+
+  function render(){
+    preview.innerHTML='';
+    if(images.length===0) return; // não mostra nada se vazio
+    images.forEach((src,idx)=>{
+      const card=document.createElement('div'); card.className='imgcard';
+      const img=document.createElement('img'); img.src=src; card.appendChild(img);
+      const rm=document.createElement('button'); rm.className='imgremove'; rm.type='button'; rm.textContent='remover';
+      rm.addEventListener('click',()=>{ images.splice(idx,1); render(); });
+      card.appendChild(rm);
+      preview.appendChild(card);
+    });
+  }
+  function addFiles(list){
+    const files=Array.from(list).filter(f=>/^image\//.test(f.type));
+    const space=MAX-images.length; if(space<=0){ alert(`Máximo de ${MAX} imagens.`); return; }
+    files.slice(0,space).forEach(f=>{
+      const r=new FileReader(); r.onload=e=>{ images.push(e.target.result); render(); };
+      r.readAsDataURL(f);
+    });
+  }
+  dz.addEventListener('click',()=>input.click());
+  dz.addEventListener('dragover',e=>{ e.preventDefault(); dz.classList.add('hover'); });
+  dz.addEventListener('dragleave',()=> dz.classList.remove('hover'));
+  dz.addEventListener('drop',e=>{ e.preventDefault(); dz.classList.remove('hover'); addFiles(e.dataTransfer.files); });
+  input.addEventListener('change',()=> addFiles(input.files));
+  render();
+})();
+
+/* Upload de imagens (pág.3) — máx. 4, sem placeholders */
+(function(){
+  const MAX = 4;
+  const dz=document.getElementById('drop3'), input=document.getElementById('fileInput3'), preview=document.getElementById('preview3');
+  if(!dz||!input||!preview) return; let images=[];
+  const pickBtn = dz.querySelector('.pick3');
+  if (pickBtn) pickBtn.addEventListener('click', (e)=>{ e.preventDefault(); input.click(); });
+
+  function render(){
+    preview.innerHTML='';
+    if(images.length===0) return; // não mostra nada se vazio
+    images.forEach((src,idx)=>{
+      const card=document.createElement('div'); card.className='imgcard';
+      const img=document.createElement('img'); img.src=src; card.appendChild(img);
+      const rm=document.createElement('button'); rm.className='imgremove'; rm.type='button'; rm.textContent='remover';
+      rm.addEventListener('click',()=>{ images.splice(idx,1); render(); });
+      card.appendChild(rm);
+      preview.appendChild(card);
+    });
+  }
+  function addFiles(list){
+    const files=Array.from(list).filter(f=>/^image\//.test(f.type));
+    const space=MAX-images.length; if(space<=0){ alert(`Máximo de ${MAX} imagens.`); return; }
+    files.slice(0,space).forEach(f=>{
+      const r=new FileReader(); r.onload=e=>{ images.push(e.target.result); render(); };
+      r.readAsDataURL(f);
+    });
+  }
+  dz.addEventListener('click',()=>input.click());
+  dz.addEventListener('dragover',e=>{ e.preventDefault(); dz.classList.add('hover'); });
+  dz.addEventListener('dragleave',()=> dz.classList.remove('hover'));
+  dz.addEventListener('drop',e=>{ e.preventDefault(); dz.classList.remove('hover'); addFiles(e.dataTransfer.files); });
+  input.addEventListener('change',()=> addFiles(input.files));
+  render();
+})();
+
+/* Página 4 – montar cards de itens a partir de sessionStorage.propostaData */
+(function(){
+  const cont=document.getElementById('itensLista'); if(!cont) return;
+  const raw=sessionStorage.getItem('propostaData'); const data=raw?JSON.parse(raw):{}; const itens=Array.isArray(data.itens)?data.itens:[];
+  if(itens.length===0){
+    const empty=document.createElement('div'); empty.className='writebox'; empty.style.borderStyle='dashed';
+    empty.textContent='Nenhum item encontrado.'; cont.appendChild(empty); return;
   }
 
-  /* Data por extenso (pág.1) */
-  (function(){
-    const hoje=new Date();
-    const dias=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
-    const meses=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
-    const el=document.getElementById('dataHoje');
-    if(el){ el.textContent = `${dias[hoje.getDay()]}, ${String(hoje.getDate()).padStart(2,'0')} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()} • Certificado ISO 9001:2015`; }
-  })();
+  function candidatesFor(nome){
+    const raw = String(nome||'').trim();
+    const noAcc = raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    const cleaned = noAcc.replace(/[+]/g,'_').replace(/[^\w.\- ]+/g,'_').replace(/_/g,' ').replace(/\s+/g,' ').trim();
+    const u = cleaned.replace(/\s+/g,'_'); const h = cleaned.replace(/\s+/g,'-');
+    const bases=[raw,noAcc,cleaned,u,h,raw.toUpperCase(),noAcc.toUpperCase(),cleaned.toUpperCase(),u.toUpperCase(),h.toUpperCase(),raw.toLowerCase(),noAcc.toLowerCase(),cleaned.toLowerCase(),u.toLowerCase(),h.toLowerCase()].filter((v,i,a)=>v&&a.indexOf(v)===i);
+    const out=[]; for(const b of bases){ out.push(`imagens/${b}.png`,`imagens/${b}.jpg`,`imagens/${b}.jpeg`); } return out;
+  }
+  function loadWithFallback(img, list, i=0){ if(i>=list.length){ img.style.display='none'; return; } img.onerror=()=>loadWithFallback(img,list,i+1); img.onload=()=>{ img.style.display='block'; }; img.src=list[i]; }
 
-  /* Editáveis (págs.2, 3 e 6) + bind do título ao campo Orçamento */
-  (function(){
-    ['editBox','editBox3','editBox6'].forEach(id=>{
-      const box=document.getElementById(id); if(!box) return;
-      box.innerHTML=''; box.addEventListener('input',()=>{ if(box.textContent.trim()===''){ box.innerHTML=''; } });
+  itens.forEach((it)=>{
+    const card=document.createElement('div'); card.className='itemcard';
+    const imgWrap=document.createElement('div'); imgWrap.className='itemimg';
+    const img=document.createElement('img'); img.alt=it?.nome||'Item'; imgWrap.appendChild(img);
+
+    const list = Array.isArray(it.img_cands) && it.img_cands.length ? it.img_cands : candidatesFor(it?.nome);
+    loadWithFallback(img, list);
+
+    const info=document.createElement('div'); const name=document.createElement('div'); name.className='itemname'; name.textContent = it?.nome || 'Item sem nome'; info.appendChild(name);
+    card.appendChild(imgWrap); card.appendChild(info); cont.appendChild(card);
+  });
+})();
+
+/* Página 4 – injetar campos de descrição editáveis abaixo do título */
+(function(){
+  const container = document.getElementById('itensLista');
+  if(!container) return;
+
+  function injectDesc(){
+    document.querySelectorAll('#pagina4 .itemcard').forEach((card)=>{
+      const infoCol = card.children && card.children[1];
+      if(!infoCol) return;
+      if(infoCol.querySelector('.writebox.desc4')) return;
+
+      const desc = document.createElement('div');
+      desc.className = 'writebox desc4';
+      desc.setAttribute('contenteditable','true');
+      desc.style.minHeight = '28mm';
+      desc.style.marginTop = '3mm';
+      infoCol.appendChild(desc);
     });
-    const orc = document.getElementById('cliOrc');
-    if(orc){
+  }
+  injectDesc();
+  const mo = new MutationObserver(()=>injectDesc());
+  mo.observe(container, { childList:true });
+})();
+
+/* Página 6 – sincronizar cartões da pág. 4 */
+(function(){
+  const lista6 = document.getElementById('descPag6Lista');
+  if(!lista6) return;
+
+  function syncFromPage4(){
+    lista6.innerHTML = '';
+    document.querySelectorAll('#pagina4 .itemcard').forEach((card)=>{
+      const info = card.children && card.children[1];
+      if(!info) return;
+      const title = info.querySelector('.itemname')?.textContent || 'Item sem nome';
+      const desc  = info.querySelector('.desc4')?.innerHTML || '&nbsp;';
+
+      const card6 = document.createElement('div'); card6.className = 'itemcard';
+      const box = document.createElement('div'); box.style.display='flex'; box.style.flexDirection='column';
+
+      const name = document.createElement('div'); name.className='itemname'; name.textContent = title;
+      const descBox = document.createElement('div'); descBox.className='writebox'; descBox.innerHTML = desc;
+
+      box.appendChild(name); box.appendChild(descBox);
+      card6.appendChild(box); lista6.appendChild(card6);
+    });
+  }
+  const cont4 = document.getElementById('itensLista');
+  if(cont4){
+    const mo = new MutationObserver(()=>syncFromPage4());
+    mo.observe(cont4, { childList:true, subtree:true });
+  }
+  document.addEventListener('input', (e)=>{
+    if(e.target && e.target.classList && e.target.classList.contains('desc4')){
+      syncFromPage4();
+    }
+  });
+})();
+
+/* Página 5 – Itens e investimento */
+(function(){
+  const raw=sessionStorage.getItem('propostaData'); const data=raw?JSON.parse(raw):{};
+  const uf = String(data.uf||'PR').toUpperCase();
+  const itens = Array.isArray(data.itens)?data.itens:[];
+  const tbody=document.getElementById('tbody5'); if(!tbody) return;
+
+  let subLiq=0, subImp=0;
+  itens.forEach((it,idx)=>{
+    const unitLiq = Number(it.unit_liq)||0;
+    const unitImp = Number(it.unit_imp)||0;
+    const qty = Math.max(1, Number(it.qty)||1);
+    const freteLiq = idx===0 ? Number(it.frete_liq||0) : 0;
+    const freteImp = idx===0 ? Number(it.frete_imp||0) : 0;
+
+    subLiq += unitLiq*qty + freteLiq;
+    subImp += unitImp*qty + freteImp;
+
+    const tr=document.createElement('tr');
+    tr.innerHTML = `
+      <td>${it.nome||'-'}</td>
+      <td class="right">${qty}</td>
+      <td class="right">${money(unitLiq)}</td>
+      <td class="right">${money(unitImp)}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('subLiq5').textContent = 'Subtotal valor líquido   ' + money(subLiq);
+  document.getElementById('subImp5').textContent = 'Subtotal valor c/ impostos   ' + money(subImp);
+  document.getElementById('totGeral5').textContent= 'Total geral   ' + money(subImp);
+
+  const imp = document.getElementById('imp5');
+  imp.textContent = (uf==='PR')
+    ? 'NCM: 85159000 – IPI 0%. PIS 0,65% / COFINS 3%. ICMS – 8,0% (vendas dentro do estado do PR).'
+    : 'NCM: 85159000 – IPI 0%. PIS 0,65% / COFINS 3%. ICMS – 4,0% (vendas fora do estado do PR).';
+
+  const validadeEl = document.getElementById('validadeData');
+  if (validadeEl) {
+    const base = data && data.data ? new Date(data.data) : new Date();
+    const ate = new Date(base); ate.setDate(base.getDate() + 7);
+    validadeEl.textContent = ate.toLocaleDateString('pt-BR');
+  }
+})();
+
+/* Pop-up de frete embutido (se km > 0) */
+(function(){
+  const raw=sessionStorage.getItem('propostaData'); const data=raw?JSON.parse(raw):{};
+  const km = Number(data.km||0);
+  const itens = Array.isArray(data.itens)?data.itens:[];
+  if(!km || !itens.length) return;
+
+  const frete = Number(itens[0]?.frete_liq || 0);
+  if(!frete) return;
+
+  const pop=document.getElementById('fretePop');
+  const v=document.getElementById('freteValor');
+  const k=document.getElementById('freteKM');
+  const ok=document.getElementById('freteOk');
+
+  v.textContent = money(frete);
+  k.textContent = km.toLocaleString('pt-BR');
+  pop.hidden = false;
+
+  ok.addEventListener('click', ()=> pop.hidden = true);
+  pop.addEventListener('click', e=>{ if(e.target===pop) pop.hidden=true; });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape') pop.hidden=true; });
+})();
+
+/* Botão imprimir garantindo o título atualizado */
+(function(){
+  const btn=document.getElementById('btnPrintAll');
+  if(btn){
+    btn.addEventListener('click', ()=>{
       updateDocTitle();
-      orc.addEventListener('input', updateDocTitle);
-    }
-    window.addEventListener('beforeprint', updateDocTitle);
-  })();
-
-  /* Upload de imagens (pág.2) — máx. 4 */
-  (function(){
-    const MAX = 4;
-    const dz=document.getElementById('drop'), input=document.getElementById('fileInput'), preview=document.getElementById('preview');
-    if(!dz||!input||!preview) return; let images=[];
-    const pickBtn = dz.querySelector('.pick');
-    if (pickBtn) pickBtn.addEventListener('click', (e)=>{ e.preventDefault(); input.click(); });
-
-    function render(){
-      preview.innerHTML='';
-      if(images.length===0){
-        const ph=document.createElement('div'); ph.className='placeholder'; ph.textContent='Nenhuma imagem selecionada.'; preview.appendChild(ph); 
-      }
-      images.forEach((src,idx)=>{
-        const card=document.createElement('div'); card.className='imgcard';
-        const img=document.createElement('img'); img.src=src; card.appendChild(img);
-        const rm=document.createElement('button'); rm.className='imgremove'; rm.type='button'; rm.textContent='remover';
-        rm.addEventListener('click',()=>{ images.splice(idx,1); render(); });
-        card.appendChild(rm);
-        preview.appendChild(card);
-      });
-      for(let i=images.length;i<MAX;i++){
-        const slot=document.createElement('div'); slot.className='imgcard';
-        const txt=document.createElement('div'); txt.className='placeholder'; txt.textContent='(vazio)';
-        slot.appendChild(txt); preview.appendChild(slot);
-      }
-    }
-    function addFiles(list){
-      const files=Array.from(list).filter(f=>/^image\//.test(f.type));
-      const space=MAX-images.length; if(space<=0){ alert(`Máximo de ${MAX} imagens.`); return; }
-      files.slice(0,space).forEach(f=>{ const r=new FileReader(); r.onload=e=>{ images.push(e.target.result); render(); }; r.readAsDataURL(f); });
-    }
-    dz.addEventListener('click',()=>input.click());
-    dz.addEventListener('dragover',e=>{ e.preventDefault(); dz.classList.add('hover'); });
-    dz.addEventListener('dragleave',()=> dz.classList.remove('hover'));
-    dz.addEventListener('drop',e=>{ e.preventDefault(); dz.classList.remove('hover'); addFiles(e.dataTransfer.files); });
-    input.addEventListener('change',()=> addFiles(input.files));
-    render();
-  })();
-
-  /* Página 4 – fotos = mesmas do index (via img_cands; fallback por nome) */
-  (function(){
-    const cont=document.getElementById('itensLista'); if(!cont) return;
-    const raw=sessionStorage.getItem('propostaData'); const data=raw?JSON.parse(raw):{}; const itens=Array.isArray(data.itens)?data.itens:[];
-    if(itens.length===0){ const empty=document.createElement('div'); empty.className='placeholder'; empty.textContent='Nenhum item encontrado.'; cont.appendChild(empty); return; }
-
-    function candidatesFor(nome){
-      const raw = String(nome||'').trim();
-      const noAcc = raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-      const cleaned = noAcc.replace(/[+]/g,'_').replace(/[^\w.\- ]+/g,'_').replace(/_/g,' ').replace(/\s+/g,' ').trim();
-      const u = cleaned.replace(/\s+/g,'_'); const h = cleaned.replace(/\s+/g,'-');
-      const bases=[raw,noAcc,cleaned,u,h,raw.toUpperCase(),noAcc.toUpperCase(),cleaned.toUpperCase(),u.toUpperCase(),h.toUpperCase(),raw.toLowerCase(),noAcc.toLowerCase(),cleaned.toLowerCase(),u.toLowerCase(),h.toLowerCase()].filter((v,i,a)=>v&&a.indexOf(v)===i);
-      const out=[]; for(const b of bases){ out.push(`imagens/${b}.png`,`imagens/${b}.jpg`,`imagens/${b}.jpeg`); } return out;
-    }
-    function loadWithFallback(img, list, i=0){ if(i>=list.length){ img.style.display='none'; return; } img.onerror=()=>loadWithFallback(img,list,i+1); img.onload=()=>{ img.style.display='block'; }; img.src=list[i]; }
-
-    itens.forEach((it)=>{
-      const card=document.createElement('div'); card.className='itemcard';
-      const imgWrap=document.createElement('div'); imgWrap.className='itemimg';
-      const img=document.createElement('img'); img.alt=it?.nome||'Item'; imgWrap.appendChild(img);
-
-      const list = Array.isArray(it.img_cands) && it.img_cands.length ? it.img_cands : candidatesFor(it?.nome);
-      loadWithFallback(img, list);
-
-      const info=document.createElement('div'); const name=document.createElement('div'); name.className='itemname'; name.textContent = it?.nome || 'Item sem nome'; info.appendChild(name);
-      card.appendChild(imgWrap); card.appendChild(info); cont.appendChild(card);
+      setTimeout(()=>window.print(), 10);
     });
-  })();
-
-  /* Página 5 – Itens e investimento */
-  (function(){
-    const raw=sessionStorage.getItem('propostaData'); const data=raw?JSON.parse(raw):{};
-    const uf = String(data.uf||'PR').toUpperCase();
-    const itens = Array.isArray(data.itens)?data.itens:[];
-    const tbody=document.getElementById('tbody5'); if(!tbody) return;
-
-    let subLiq=0, subImp=0;
-    itens.forEach((it,idx)=>{
-      const unitLiq = Number(it.unit_liq)||0;
-      const unitImp = Number(it.unit_imp)||0;
-      const qty = Math.max(1, Number(it.qty)||1);
-      const freteLiq = idx===0 ? Number(it.frete_liq||0) : 0;
-      const freteImp = idx===0 ? Number(it.frete_imp||0) : 0;
-
-      subLiq += unitLiq*qty + freteLiq;
-      subImp += unitImp*qty + freteImp;
-
-      const tr=document.createElement('tr');
-      tr.innerHTML = `
-        <td>${it.nome||'-'}</td>
-        <td class="right">${qty}</td>
-        <td class="right">${money(unitLiq)}</td>
-        <td class="right">${money(unitImp)}</td>`;
-      tbody.appendChild(tr);
-    });
-
-    document.getElementById('subLiq5').textContent = 'Subtotal valor líquido   ' + money(subLiq);
-    document.getElementById('subImp5').textContent = 'Subtotal valor c/ impostos   ' + money(subImp);
-    document.getElementById('totGeral5').textContent= 'Total geral   ' + money(subImp);
-
-    const imp = document.getElementById('imp5');
-    imp.textContent = (uf==='PR')
-      ? 'NCM: 85159000 – IPI 0%. PIS 0,65% / COFINS 3%. ICMS – 8,0% (vendas dentro do estado do PR).'
-      : 'NCM: 85159000 – IPI 0%. PIS 0,65% / COFINS 3%. ICMS – 4,0% (vendas fora do estado do PR).';
-
-    const validadeEl = document.getElementById('validadeData');
-    if (validadeEl) {
-      const base = data && data.data ? new Date(data.data) : new Date();
-      const ate = new Date(base); ate.setDate(base.getDate() + 7);
-      validadeEl.textContent = ate.toLocaleDateString('pt-BR');
-    }
-  })();
-
-  /* Pop-up de frete embutido (se km > 0) */
-  (function(){
-    const raw=sessionStorage.getItem('propostaData'); const data=raw?JSON.parse(raw):{};
-    const km = Number(data.km||0);
-    const itens = Array.isArray(data.itens)?data.itens:[];
-    if(!km || !itens.length) return;
-
-    const frete = Number(itens[0]?.frete_liq || 0);
-    if(!frete) return;
-
-    const pop=document.getElementById('fretePop');
-    const v=document.getElementById('freteValor');
-    const k=document.getElementById('freteKM');
-    const ok=document.getElementById('freteOk');
-
-    v.textContent = money(frete);
-    k.textContent = km.toLocaleString('pt-BR');
-    pop.hidden = false;
-
-    ok.addEventListener('click', ()=> pop.hidden = true);
-    pop.addEventListener('click', e=>{ if(e.target===pop) pop.hidden=true; });
-    document.addEventListener('keydown', e=>{ if(e.key==='Escape') pop.hidden=true; });
-  })();
-
-  /* Botão imprimir garantindo o título atualizado */
-  (function(){
-    const btn=document.getElementById('btnPrintAll');
-    if(btn){
-      btn.addEventListener('click', ()=>{
-        updateDocTitle();
-        setTimeout(()=>window.print(), 10);
-      });
-    }
-  })();
-
-  window.addEventListener('beforeprint', updateDocTitle);
+  }
+})();
+window.addEventListener('beforeprint', updateDocTitle);
 </script>
 </body>
 </html>
