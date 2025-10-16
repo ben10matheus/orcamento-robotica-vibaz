@@ -24,7 +24,6 @@
     font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
     position:relative;
   }
-  /* logo grande de fundo */
   body::after{
     content:""; position:fixed; inset:0;
     background:url("imagens/logo.png") no-repeat center calc(100% - 40px) / clamp(240px, 40vw, 520px);
@@ -74,8 +73,16 @@
 
   .include-btn{ width:100%; padding:12px 14px; border-radius:12px; font-weight:800; background:var(--btn); color:#fff; border:none; cursor:pointer; box-shadow:0 2px 0 0 #425fb5; white-space:nowrap }
   .include-btn:hover{background:var(--btn-hover)}
-  .include-btn[data-on="1"]{background:#e03131; box-shadow:0 2px 0 0 #932020}
-  .include-btn[data-on="1"]:hover{background:#c22020}
+  /* reforço de cor para o estado Remover */
+  .include-btn.on,
+  .include-btn[data-on="1"]{
+    background:#e03131 !important;
+    box-shadow:0 2px 0 0 #932020 !important;
+  }
+  .include-btn.on:hover,
+  .include-btn[data-on="1"]:hover{
+    background:#c22020 !important;
+  }
 
   .placeholder{ margin:24px auto 0; padding:16px; border:1px dashed #9fb3ff; border-radius:12px; text-align:center; color:#3a4266; background:#f0f4ff; max-width:900px }
 
@@ -107,9 +114,7 @@
     html,body{ background:#fff } body::after{ display:none }
     header,.toolbar,.placeholder,#catalog,.grid,.card,.overlay:not(.print){ display:none !important }
     .overlay.print{ display:block !important; position:static !important; background:transparent !important; -webkit-print-color-adjust:exact; print-color-adjust:exact }
-    .overlay.print .sheet{ margin:0; border:none; border-radius:0; box-shadow:none; max-height:none; overflow:visible; width:100% !important; max-width:100% !important }
-    .overlay.print .sheet header{ position:static; border-bottom:0; padding:6mm 0 2mm }
-    .overlay.print .sheet .content{ overflow:visible; padding:0 2mm }
+    .sheet .content{ overflow:visible; padding:0 2mm }
   }
 
   @media (max-width: 768px){
@@ -172,7 +177,7 @@
       <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
       <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
       <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
-      <option value="outros">Outros</option>
+      <!-- Sem "Outros": UF ≠ PR já usa outros.json automaticamente -->
     </select>
   </div>
 
@@ -187,7 +192,7 @@
   <section id="catalog" class="grid"></section>
 </main>
 
-<!-- Preview (opcional) -->
+<!-- Preview -->
 <div class="overlay" id="overlay">
   <div class="sheet" id="sheet">
     <header>
@@ -270,8 +275,11 @@ const parseBR = s => {
   const n=parseFloat(x);
   return Number.isFinite(n)? n:0;
 };
+/* normalização busca */
+function normStr(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+function cleanStr(s){ return normStr(s).replace(/[^a-z0-9]+/gi,' ').trim(); }
 
-/* ===== Imagens com fallback (pasta /imagens) ===== */
+/* ===== Imagens com fallback ===== */
 function candidatesFor(nome){
   const raw = String(nome||'').trim();
   const noAcc = raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -296,40 +304,60 @@ const catalog=$('#catalog'), hint=$('#hint'), inputSearch=$('#search'), selectUF
 const btnClear=$('#btnClear'), btnClearSearch=$('#btnClearSearch');
 const btnCloseQuote=$('#btnCloseQuote');
 
-const overlay=$('#overlay'), btnBack=$('#btnBack'), btnPrint=$('#btnPrint');
-const selGrid=$('#selGrid'), tbody=$('#tbody'), subLiq=$('#subLiq'), subImp=$('#subImp'), totGeral=$('#totGeral'), meta=$('#meta'), sug=$('#sug');
-
 const btnCart=$('#btnCart'), cartBadge=$('#cartBadge');
 const cartOverlay=$('#cartOverlay'), btnCloseCart=$('#btnCloseCart');
 const cartSelGrid=$('#cartSelGrid'), cartTbody=$('#cartTbody');
 const cartSubLiq=$('#cartSubLiq'), cartSubImp=$('#cartSubImp'), cartTotGeral=$('#cartTotGeral'), cartMeta=$('#cartMeta');
 
-/* ===== Carregar JSON por UF ===== */
-async function loadDataByUF(uf){
-  const map={PR:'data/pr.json', outros:'data/outros.json'};
-  const url= uf==='PR' ? map.PR : map.outros;
-  try{
-    const res=await fetch(url,{cache:'no-store'});
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data=await res.json();
-    state.all=data.map(x=>({
-      nome:String(x.nome||x.modelo||x.Nome||'').trim(),
-      ad:parseBR(x.ad??x.AD??x.sem_impostos??x.unit_sem??0),
-      an:parseBR(x.an??x.AN??x.com_impostos??x.unit_com??0),
-      qty:1, incluir:0
-    })).filter(x=>x.nome);
+/* ===== Carregar JSON por UF — robusto com alerta ===== */
+async function loadDataByUF(uf) {
+  const file = (uf === 'PR') ? 'pr.json' : 'outros.json';
+  const candidates = ['./data/' + file, 'data/' + file, '/data/' + file];
+  let lastErr = null, data = null;
 
-    sug.innerHTML=state.all.map(it=>`<option value="${it.nome}">`).join('');
-    state.filtered=[]; renderCards();
-    hint.style.display='block'; hint.textContent='Use a busca acima para listar os modelos.';
-    updateCartBadge();
-  }catch(err){
-    console.error('Falha ao carregar catálogo:', err);
-    state.all=[]; state.filtered=[];
-    renderCards();
-    hint.textContent = `Não foi possível carregar ${url}. Verifique a pasta "data/".`;
-    hint.style.display='block';
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' em ' + (res.url || url));
+      const txt = await res.text();
+      try { data = JSON.parse(txt); }
+      catch (e) { throw new Error('JSON invalido em ' + url + ' — inicio: ' + txt.slice(0, 120) + '...'); }
+      break;
+    } catch (err) { lastErr = err; }
   }
+
+  if (!data) {
+    alert('Nao foi possivel carregar o catalogo.\n' +
+      (lastErr ? String(lastErr) : 'Motivo desconhecido.') + '\n\n' +
+      'Verifique se os arquivos existem:\n • data/pr.json\n • data/outros.json\n\n' +
+      'Dica: abra no navegador para testar:\n  http://127.0.0.1:5500/data/pr.json');
+    state.all = []; state.filtered = []; catalog.innerHTML = '';
+    hint.textContent = 'Nao foi possivel carregar o catalogo. Veja o alerta.'; hint.style.display = 'block';
+    updateCartBadge(); return;
+  }
+
+  state.all = data.map(function (x) {
+    return {
+      nome: String(x.nome || x.modelo || x.Nome || '').trim(),
+      ad: parseBR(x.ad || x.AD || x.sem_impostos || x.unit_sem || 0),
+      an: parseBR(x.an || x.AN || x.com_impostos || x.unit_com || 0),
+      qty: 1, incluir: 0
+    };
+  }).filter(function (x) { return x.nome; });
+
+  const sug=document.getElementById('sug');
+  if (sug) {
+    sug.innerHTML = state.all.map(function (it) {
+      var v = it.nome.replace(/"/g, '&quot;'); return '<option value="' + v + '">';
+    }).join('');
+  }
+
+  // Início vazio
+  state.filtered = [];
+  renderCards();
+  hint.style.display = 'block';
+  hint.textContent = 'Use a busca acima para listar os modelos.';
+  updateCartBadge();
 }
 
 /* ===== Render ===== */
@@ -352,89 +380,48 @@ function renderCards(){
       <div class="row">
         <div style="max-width:170px"><label>Quantidade</label><input class="qty" type="number" min="1" step="1" value="${it.qty}"></div>
         <div style="display:flex;align-items:flex-end">
-          <button class="include-btn" data-on="${it.incluir?1:0}">${it.incluir?'Remover':'Adicionar ao carrinho'}</button>
+          <button class="include-btn ${it.incluir? 'on':''}" data-on="${it.incluir?1:0}">${it.incluir?'Remover':'Adicionar ao carrinho'}</button>
         </div>
       </div>`;
-    body.querySelector('.qty').addEventListener('input',e=>{
-      const v=Math.max(1,parseInt(e.target.value||'1',10)); it.qty=v; e.target.value=v; updateCartBadge();
-    });
-    const btn=body.querySelector('.include-btn');
-    btn.addEventListener('click',()=>{
-      it.incluir=it.incluir?0:1;
-      btn.dataset.on=it.incluir?1:0;
-      btn.textContent=it.incluir?'Remover':'Adicionar ao carrinho';
-      card.dataset.selected=it.incluir?'1':'0';
-      updateCartBadge();
-    });
+    body.querySelector('.qty').addEventListener('input',e=>{ const v=Math.max(1,parseInt(e.target.value||'1',10)); it.qty=v; e.target.value=v; updateCartBadge(); });
+    body.querySelector('.include-btn').addEventListener('click',()=>{ it.incluir=it.incluir?0:1; renderCards(); updateCartBadge(); });
     card.append(media,body); catalog.appendChild(card);
   });
 }
 
 /* ===== Busca ===== */
 function applyFilter(){
-  const q=inputSearch.value.trim().toLowerCase();
-  if(q.length<1){ state.filtered = []; renderCards(); return; }
-  state.filtered = state.all.filter(it=>it.nome.toLowerCase().includes(q));
-  renderCards();
-}
-
-/* ===== Preview (opcional) ===== */
-function buildPreview(){
-  const km = Math.max(0, parseInt(inputKM.value||'0',10));
-  const custo = km * TARIFA_KM; // somado apenas no 1º item
-  const itensSel = state.all.filter(it=>it.incluir);
-
-  selGrid.innerHTML=''; tbody.innerHTML='';
-  subLiq.textContent='Subtotal valor líquido';
-  subImp.textContent='Subtotal valor c/ impostos';
-  totGeral.textContent='Total geral';
-  meta.textContent=`Somente itens selecionados • UF: ${selectUF.value.toUpperCase()} • Distância: ${km} Km`;
-
-  if(itensSel.length===0){
-    selGrid.innerHTML='<div style="grid-column:1/-1;padding:10px;background:#fff;border:1px dashed #a3b0ff;border-radius:10px;text-align:center">Nenhum item selecionado.</div>';
+  const q = cleanStr(inputSearch.value.trim());
+  if (!q) {
+    state.filtered = [];         // vazio no início
+    renderCards();
+    hint.style.display = 'block';
+    hint.textContent = 'Use a busca acima para listar os modelos.';
     return;
   }
-
-  itensSel.forEach((it,idx)=>{
-    const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
-    const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
-    const box=document.createElement('div'); box.className='sel-item';
-    box.innerHTML=`
-      <div class="imgbox"><img alt="${it.nome}"></div>
-      <div class="info">
-        <h4>${it.nome}</h4>
-        <div class="row"><div>Valor líquido: <b>${money(it.ad)}</b></div><div>Valor c/ impostos: <b>${money(it.an)}</b></div></div>
-        <div class="row"><div>Total líquido: <b>${money(totalLiq)}</b></div><div>Total c/ impostos: <b>${money(totalImp)}</b></div></div>
-        <div>Qtd: <b>${it.qty}</b></div>`;
-    const img=box.querySelector('img'); loadImageWithFallback(img,candidatesFor(it.nome));
-    selGrid.appendChild(box);
-  });
-
-  let subtotalLiq=0, subtotalImp=0;
-  itensSel.forEach((it,idx)=>{
-    const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
-    const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
-    subtotalLiq += totalLiq; subtotalImp += totalImp;
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${it.nome}</td><td class="right">${it.qty}</td><td class="right">${money(totalLiq)}</td><td class="right">${money(totalImp)}</td>`;
-    tbody.appendChild(tr);
-  });
-
-  subLiq.textContent = `Subtotal valor líquido       ${money(subtotalLiq)}`;
-  subImp.textContent  = `Subtotal valor c/ impostos   ${money(subtotalImp)}`;
-  totGeral.textContent= `Total geral                   ${money(subtotalImp)}`;
+  state.filtered = state.all.filter(it => cleanStr(it.nome).includes(q));
+  renderCards();
 }
 
 /* ===== Carrinho ===== */
 function updateCartBadge(){
   const count = state.all.filter(it => it.incluir).reduce((s,it)=>s + Number(it.qty||0), 0);
-  cartBadge.textContent = count;
-  cartBadge.style.display = count > 0 ? 'inline-block' : 'none';
+  const b=document.getElementById('cartBadge');
+  if(b){ b.textContent = count; b.style.display = count > 0 ? 'inline-block' : 'none'; }
 }
+
+/* ===== Carrinho: abrir/fechar ===== */
 function buildCart(){
   const km = Math.max(0, parseInt(inputKM.value||'0',10));
   const custo = km * TARIFA_KM;
   const itensSel = state.all.filter(it=>it.incluir);
+
+  const cartSelGrid=document.getElementById('cartSelGrid');
+  const cartTbody=document.getElementById('cartTbody');
+  const cartSubLiq=document.getElementById('cartSubLiq');
+  const cartSubImp=document.getElementById('cartSubImp');
+  const cartTotGeral=document.getElementById('cartTotGeral');
+  const cartMeta=document.getElementById('cartMeta');
 
   cartSelGrid.innerHTML=''; cartTbody.innerHTML='';
   cartSubLiq.textContent='Subtotal valor líquido';
@@ -457,17 +444,16 @@ function buildCart(){
       <div>Qtd: <b>${it.qty}</b></div></div>`;
     const img=box.querySelector('img'); loadImageWithFallback(img,candidatesFor(it.nome));
     cartSelGrid.appendChild(box);
-  });
-
-  let subtotalLiq=0, subtotalImp=0;
-  itensSel.forEach((it,idx)=>{
-    const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
-    const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
-    subtotalLiq += totalLiq; subtotalImp += totalImp;
 
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${it.nome}</td><td class="right">${it.qty}</td><td class="right">${money(totalLiq)}</td><td class="right">${money(totalImp)}</td>`;
     cartTbody.appendChild(tr);
+  });
+
+  let subtotalLiq=0, subtotalImp=0;
+  itensSel.forEach((it,idx)=>{
+    subtotalLiq += (it.ad * it.qty) + (idx===0 ? custo : 0);
+    subtotalImp += (it.an * it.qty) + (idx===0 ? custo : 0);
   });
 
   cartSubLiq.textContent = `Subtotal valor líquido       ${money(subtotalLiq)}`;
@@ -475,37 +461,58 @@ function buildCart(){
   cartTotGeral.textContent= `Total geral                   ${money(subtotalImp)}`;
 }
 
-/* ===== Eventos ===== */
-inputSearch.addEventListener('input',applyFilter);
-btnClearSearch.addEventListener('click',()=>{ inputSearch.value=""; applyFilter(); });
-selectUF.addEventListener('change',async()=>{ state.uf=selectUF.value; await loadDataByUF(state.uf); applyFilter(); });
-inputKM.addEventListener('input',e=>{ state.km=Math.max(0,parseInt(e.target.value||'0',10)); });
-
-btnClear.addEventListener('click',()=>{
-  const temItens = state.all.some(it => it.incluir);
-  if(!temItens){ alert('O carrinho já está vazio.'); return; }
-  if(!confirm('Tem certeza que deseja LIMPAR o carrinho?')) return;
-  state.all.forEach(it=>{it.incluir=0; it.qty=1;}); state.filtered.forEach(it=>{it.incluir=0; it.qty=1;});
-  renderCards(); updateCartBadge();
+document.getElementById('btnCart')?.addEventListener('click', () => {
+  buildCart();
+  document.getElementById('cartOverlay')?.classList.add('show');
+});
+document.getElementById('btnCloseCart')?.addEventListener('click', () => {
+  document.getElementById('cartOverlay')?.classList.remove('show');
 });
 
-/* Carrinho */
-btnCart.addEventListener('click',()=>{ buildCart(); cartOverlay.classList.add('show'); });
-btnCloseCart.addEventListener('click',()=> cartOverlay.classList.remove('show'));
-
-/* Preview opcional (não usamos no fluxo principal) */
-btnBack.addEventListener('click',()=>overlay.classList.remove('show'));
-btnPrint.addEventListener('click',()=>{
-  overlay.classList.add('print');
-  setTimeout(()=>window.print(),50);
-});
-window.addEventListener('afterprint', ()=> overlay.classList.remove('print'));
+/* ========= Confirm “Sim/Não” + Prompt de Senha ========= */
+function confirmBR(msg){
+  return new Promise((resolve)=>{
+    const mask=document.createElement('div'); mask.style.cssText="position:fixed;inset:0;background:rgba(18,24,40,.6);display:flex;align-items:center;justify-content:center;z-index:99999";
+    const box=document.createElement('div'); box.style.cssText="width:min(420px,92vw);background:#1f2937;color:#e5e7eb;border:1px solid #334155;border-radius:12px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35);font:14px/1.4 system-ui,sans-serif";
+    box.innerHTML='<div style="margin-bottom:10px">'+msg+'</div><div style="display:flex;gap:10px;justify-content:flex-end"><button id="btnNao" style="padding:8px 12px;border:1px solid #475569;border-radius:10px;background:#0f172a;color:#e5e7eb;cursor:pointer">Não</button><button id="btnSim" style="padding:8px 12px;border:1px solid #15803d;border-radius:10px;background:#16a34a;color:#fff;cursor:pointer">Sim</button></div>';
+    mask.appendChild(box); document.body.appendChild(mask);
+    const cleanup=v=>{document.removeEventListener('keydown',onKey); mask.remove(); resolve(v);};
+    const onKey=e=>{if(e.key==='Escape')cleanup(false); if(e.key==='Enter')cleanup(true);};
+    box.querySelector('#btnSim').addEventListener('click',()=>cleanup(true));
+    box.querySelector('#btnNao').addEventListener('click',()=>cleanup(false));
+    document.addEventListener('keydown',onKey);
+    box.querySelector('#btnSim').focus();
+  });
+}
+function promptSenhaBR(msg){
+  return new Promise((resolve)=>{
+    const mask=document.createElement('div'); mask.style.cssText="position:fixed;inset:0;background:rgba(18,24,40,.6);display:flex;align-items:center;justify-content:center;z-index:99999";
+    const box=document.createElement('div'); box.style.cssText="width:min(420px,92vw);background:#1f2937;color:#e5e7eb;border:1px solid #334155;border-radius:12px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35);font:14px/1.4 system-ui,sans-serif";
+    box.innerHTML=`
+      <div style="margin-bottom:8px">${msg}</div>
+      <input id="pwdIn" type="password" placeholder="Digite a senha" style="width:100%;margin:6px 0 10px;padding:8px 10px;border-radius:10px;border:1px solid #475569;background:#0f172a;color:#e5e7eb;outline:none">
+      <div id="pwdErr" style="display:none;color:#fca5a5;font-size:12px;margin:-4px 0 8px">Senha incorreta. Tente novamente.</div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button id="pwdCancel" style="padding:8px 12px;border:1px solid #475569;border-radius:10px;background:#0f172a;color:#e5e7eb;cursor:pointer">Cancelar</button>
+        <button id="pwdOk" style="padding:8px 12px;border:1px solid #15803d;border-radius:10px;background:#16a34a;color:#fff;cursor:pointer">Confirmar</button>
+      </div>`;
+    mask.appendChild(box); document.body.appendChild(mask);
+    const inp=box.querySelector('#pwdIn'), err=box.querySelector('#pwdErr');
+    const cleanup=v=>{document.removeEventListener('keydown',onKey); mask.remove(); resolve(v);};
+    const onKey=e=>{if(e.key==='Escape')cleanup(false); if(e.key==='Enter')submit();};
+    function submit(){ const v=String(inp.value||'').trim(); if(v==='121419') cleanup(true); else { err.style.display='block'; inp.select(); } }
+    box.querySelector('#pwdOk').addEventListener('click', submit);
+    box.querySelector('#pwdCancel').addEventListener('click', ()=>cleanup(false));
+    document.addEventListener('keydown', onKey);
+    inp.focus();
+  });
+}
 
 /* ===== Fechar orçamento -> salva sessão e abre proposta.html ===== */
 function coletarDadosParaProposta(){
   const km = Math.max(0, parseInt(document.querySelector('#km').value||'0',10));
   const uf = document.querySelector('#uf').value;
-  const frete = km * TARIFA_KM; // embutir no 1º item (líq e imp)
+  const frete = km * TARIFA_KM;
 
   const itensSel = state.all.filter(it=>it.incluir);
   const itens = itensSel.map((it, idx) => ({
@@ -521,18 +528,123 @@ function coletarDadosParaProposta(){
   return { uf, km, data: new Date().toISOString(), itens };
 }
 
-btnCloseQuote.addEventListener('click', ()=>{
+btnCloseQuote.addEventListener('click', async ()=>{
   const dados = coletarDadosParaProposta();
   if(!dados.itens || dados.itens.length===0){
     alert('Selecione ao menos 1 item para gerar a proposta.');
     return;
   }
+
+  const querSeg = await confirmBR('Deseja adicionar célula de segurança?');
+
+  if (querSeg) {
+    const ok = await promptSenhaBR('Informe a senha para adicionar a célula de segurança:');
+    if (ok) {
+      const PRECO = {
+        'SEÇÃO BIOMBO 1,2×2M': 2473.42,
+        'BARREIRA DE LUZ 1,7M': 27207.60,
+        'BARREIRA DE LUZ 1M': 18138.40,
+        'SEMAFORO 4 CORES': 824.47,
+        'FECHADURA SEGURANÇA/SENSOR': 10718.14,
+        'BOTOEIRA BIMANUAL': 9069.20,
+        'CLP PROGRAMAÇÃO': 15664.98,
+        'CLP SEGURANÇA': 11377.72,
+        'RELÊ DE SEGURANÇA': 3297.89,
+        'CABEAMENTO/CONECTORES': 16489.45
+      };
+
+      const lista = [];
+      let base = 0;
+
+      for (const [nome, preco] of Object.entries(PRECO)) {
+        const resp = prompt('Quantidade para '+nome+' (R$ '+preco.toFixed(2)+'):', '0');
+        if (resp === null) continue;
+        const q = Math.max(0, parseInt(String(resp).trim() || '0', 10));
+        if (q > 0) {
+          const sub = q * preco;
+          lista.push({ nome, qtd: q, preco, subtotal: sub });
+          base += sub;
+        }
+      }
+
+      if (base > 0) {
+        const linhas = lista.map(it => it.qtd+'× '+it.nome);
+        const descTexto = 'Componentes da célula de segurança:\n- '+linhas.join('\n- ');
+
+        const ufSel = String(document.querySelector('#uf')?.value || 'PR').toUpperCase();
+        const LIQ_MULT = 1.45;
+        const IMPOSTO_MULT = (ufSel === 'PR') ? 1.12245 : 1.0765;
+
+        const unit_liq = +(base * LIQ_MULT).toFixed(2);
+        const unit_imp = +(unit_liq * IMPOSTO_MULT).toFixed(2);
+
+        dados.itens.push({
+          nome: 'Célula de segurança',
+          qty: 1,
+          unit_liq,
+          unit_imp,
+          img_cands: ['imagens/CELULA DE SEGURANCA.png'],
+          desc_default: descTexto,
+          frete_liq: 0,
+          frete_imp: 0
+        });
+
+        dados.celulaSeg = lista;
+      }
+    }
+  }
+
   sessionStorage.setItem('propostaData', JSON.stringify(dados));
   window.location.href = 'proposta.html';
 });
 
 /* ===== Boot ===== */
 (async function init(){ await loadDataByUF(state.uf); })();
+
+/* Busca */
+inputSearch.addEventListener('input', applyFilter);
+inputSearch.addEventListener('change', applyFilter);
+inputSearch.addEventListener('keydown', (e)=>{ if(e.key==='Enter') applyFilter(); });
+
+/* Limpar busca */
+document.getElementById('btnClearSearch').addEventListener('click',(e)=>{
+  e.preventDefault();
+  inputSearch.value='';
+  applyFilter();
+  inputSearch.focus();
+});
+
+/* Limpar carrinho — versão robusta */
+document.getElementById('btnClear').addEventListener('click', (e) => {
+  e.preventDefault();
+
+  const temItens = state.all.some(it => it.incluir);
+  if (!temItens) {
+    alert('O carrinho já está vazio.');
+    return;
+  }
+  if (!confirm('Tem certeza que deseja LIMPAR o carrinho?')) return;
+
+  // zera seleção e quantidades
+  state.all.forEach(it => { it.incluir = 0; it.qty = 1; });
+  state.filtered.forEach(it => { it.incluir = 0; it.qty = 1; });
+
+  // re-renderiza grade + badge
+  renderCards();
+  updateCartBadge();
+
+  // se overlay estiver aberto, sincroniza visual
+  const overlay = document.getElementById('cartOverlay');
+  if (overlay && overlay.classList.contains('show')) {
+    document.getElementById('cartSelGrid').innerHTML = '';
+    document.getElementById('cartTbody').innerHTML   = '';
+    document.getElementById('cartSubLiq').textContent = 'Subtotal valor líquido';
+    document.getElementById('cartSubImp').textContent = 'Subtotal valor c/ impostos';
+    document.getElementById('cartTotGeral').textContent = 'Total geral';
+    document.getElementById('cartMeta').textContent =
+      `UF: ${String(document.getElementById('uf').value).toUpperCase()} • Distância: ${document.getElementById('km').value||0} Km • 0 item(ns)`;
+  }
+});
 </script>
 </body>
 </html>
