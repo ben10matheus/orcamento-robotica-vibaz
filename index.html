@@ -525,7 +525,7 @@ btnCloseQuote.addEventListener('click', async ()=>{
       }
       if (base > 0) {
         const linhas = lista.map(it => it.qtd+'× '+it.nome);
-        const descTexto = 'Componentes da célula de segurança:\n- '+linhas.join('\n- ');
+        const descTexto = 'Componentes da célula de segurança:- '+linhas.join('- ');
         const ufSel = String(document.querySelector('#uf')?.value || 'PR').toUpperCase();
         const unit_liq = +(base * 1.45).toFixed(2);
         const unit_imp = +(unit_liq * (ufSel==='PR'?1.12245:1.0765)).toFixed(2);
@@ -537,7 +537,6 @@ btnCloseQuote.addEventListener('click', async ()=>{
   sessionStorage.setItem('propostaData', JSON.stringify(dados));
   window.location.href = 'proposta.html';
 });
-
 /* ===== Boot ===== */
 (async function init(){ await loadDataByUF(state.uf); })();
 </script>
