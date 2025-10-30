@@ -317,7 +317,9 @@ document.addEventListener("DOMContentLoaded", function(){
     <section class="box">
       <h3>Condições comerciais</h3>
       <div style="line-height:1.45">
-        <b>Forma de pagamento:</b> a negociar no fechamento do pedido.<br>
+        <b>Forma de pagamento:</b> <span id="formaPagamentoSpan">a negociar no fechamento do pedido.</span>
+        <button id="btnMudarPagamento" class="no-print btn" style="margin-left:10px; padding:6px 8px; font-size:12px;">Mudar forma de pagamento</button>
+        <br>
         <b>Prazo de entrega previsto:</b> Importação: estimativa 75 dias após confirmação. Estoque: 2 dias úteis para preparação.<br>
         <b>Transporte e seguro:</b> por conta do cliente (Retirar VIBAZ – PR).<br>
         <b>Validade da proposta:</b> até <span id="validadeData"></span>.
@@ -646,6 +648,39 @@ function loadWithFallback(img, list, i=0){ if(!list||!list.length){ img.style.di
   if(btn){ btn.addEventListener('click', ()=>{ updateDocTitle(); setTimeout(()=>window.print(), 10); }); }
 })();
 window.addEventListener('beforeprint', updateDocTitle);
+
+/* === Nova funcionalidade: editar Forma de pagamento (temporário, sessão) ===
+   - botão com id "btnMudarPagamento"
+   - span com id "formaPagamentoSpan"
+   - senha utilizada: 121419 (mesma que você informou)
+   - alteração só para a sessão (não grava em arquivo)
+*/
+(function(){
+  const BTN_ID = 'btnMudarPagamento';
+  const SPAN_ID = 'formaPagamentoSpan';
+  const PASSWORD = '121419'; // senha conforme solicitado
+
+  const btn = document.getElementById(BTN_ID);
+  const span = document.getElementById(SPAN_ID);
+
+  if(!btn || !span) return;
+
+  btn.addEventListener('click', function(){
+    // pedir senha
+    const entrada = prompt('Digite a senha para alteração da forma de pagamento:');
+    if(entrada === null) return; // cancelou
+    if(entrada !== PASSWORD){
+      alert('Senha incorreta!');
+      return;
+    }
+
+    // senha correta -> pedir novo texto
+    const novo = prompt('Informe o texto da nova forma de pagamento:', span.textContent);
+    if(novo === null) return; // cancelou
+    // atualiza apenas na sessão
+    span.textContent = novo.trim() ? novo.trim() : 'a negociar no fechamento do pedido.';
+  });
+})();
 </script>
 </body>
 </html>
