@@ -90,7 +90,6 @@
   .tbl th{background:#eef2ff; text-align:left}
   .right{text-align:right; font-variant-numeric:tabular-nums}
   .tbl tfoot td{font-weight:800}
-  .tbl tr{break-inside:avoid}
 
   @media print{
     @page{ size:A4 landscape; margin:12mm }
@@ -109,6 +108,19 @@
     #btnClearSearch, #btnClear{ width:100% } .grid{ grid-template-columns:1fr }
     .sheet{ margin:12px; max-height:90vh } .sel-grid{ grid-template-columns:1fr }
   }
+
+  /* === Lista de opções (completa) === */
+  #searchField{ position:relative; }
+  .optbox{
+    position:absolute; left:0; right:0; top:100%; margin-top:6px;
+    background:#1f2937; color:#e9efff; border:1px solid #334155; border-radius:10px;
+    max-height:320px; overflow:auto; display:none; z-index:30; box-shadow:0 10px 30px rgba(0,0,0,.25);
+  }
+  .optbox.show{ display:block; }
+  .optbox .opt{ padding:8px 10px; border-bottom:1px solid #2b364f; cursor:pointer; }
+  .optbox .opt:last-child{ border-bottom:none; }
+  .optbox .opt:hover{ background:#2f395a; }
+  .optbox .nores{ padding:10px; color:#9fb3ff; }
 </style>
 </head>
 
@@ -135,10 +147,11 @@
   <div class="brand-mini" aria-hidden="true"><img src="imagens/logo-branca.png" alt="" /></div>
 
   <div class="search-wrap">
-    <div style="flex:1">
+    <div id="searchField" style="flex:1">
       <label>Pesquisar modelo</label>
       <input id="search" list="sug" placeholder="digite parte do nome..." />
       <datalist id="sug"></datalist>
+      <div id="optBox" class="optbox" role="listbox" aria-label="Todos os modelos"></div>
     </div>
     <button class="btn secondary" id="btnClearSearch">Limpar busca</button>
   </div>
@@ -160,7 +173,6 @@
       <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
       <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
       <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
-      <!-- Sem "Outros": UF ≠ PR já usa outros.json automaticamente -->
     </select>
   </div>
 
@@ -169,7 +181,6 @@
     <input id="km" type="number" min="0" step="1" value="0" />
   </div>
 
-  <!-- Botão Produto Personalizado -->
   <div>
     <label>&nbsp;</label>
     <button class="btn" id="btnAddCustom">Adicionar personalizado</button>
@@ -177,7 +188,8 @@
 </section>
 
 <main>
-  <div id="hint" class="placeholder">Use a busca acima para listar os modelos.</div>
+  <!-- REMOVIDO: hint (fica escondido e sem texto) -->
+  <div id="hint" class="placeholder" style="display:none"></div>
   <section id="catalog" class="grid"></section>
 </main>
 
@@ -198,6 +210,10 @@
         <label>Valor c/ impostos (R$)</label>
         <input id="cp_imp" type="number" step="0.01" min="0" placeholder="0,00" style="width:100%;padding:8px 10px;border:1px solid #d0d7ff;border-radius:10px">
       </div>
+      <div>
+        <label>Quantidade</label>
+        <input id="cp_qtd" type="number" min="1" step="1" value="1" style="width:100%;padding:8px 10px;border:1px solid #d0d7ff;border-radius:10px">
+      </div>
       <div style="grid-column:1/-1">
         <label>Imagem (PNG/JPG)</label>
         <input id="cp_img" type="file" accept="image/*" style="width:100%">
@@ -211,7 +227,7 @@
   </div>
 </div>
 
-<!-- Preview (opcional) -->
+<!-- Preview -->
 <div class="overlay" id="overlay">
   <div class="sheet" id="sheet">
     <header>
@@ -315,6 +331,28 @@ const $=(s,e=document)=>e.querySelector(s);
 const catalog=$('#catalog'), hint=$('#hint'), inputSearch=$('#search'), selectUF=$('#uf'), inputKM=$('#km');
 const btnClear=$('#btnClear'), btnClearSearch=$('#btnClearSearch'), btnCloseQuote=$('#btnCloseQuote');
 
+/* ===== Lista expandida ===== */
+const optBox = document.getElementById('optBox');
+function closeOptBox(){ optBox.classList.remove('show'); }
+function openOptBox(){ if(optBox.innerHTML.trim()==='') refreshOptions(''); optBox.classList.add('show'); }
+function refreshOptions(q){
+  const query = cleanStr(q||'');
+  const items = state.all.filter(it => cleanStr(it.nome).includes(query));
+  if(items.length===0){
+    optBox.innerHTML = '<div class="nores">Nenhum modelo encontrado.</div>';
+    return;
+  }
+  optBox.innerHTML = items.map(it => `<div class="opt" data-name="${String(it.nome).replace(/"/g,'&quot;')}">${it.nome}</div>`).join('');
+  optBox.querySelectorAll('.opt').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const name = el.getAttribute('data-name')||'';
+      inputSearch.value = name;
+      closeOptBox();
+      applyFilter();
+    });
+  });
+}
+
 /* ===== Carregar JSON por UF ===== */
 async function loadDataByUF(uf) {
   const file = (uf === 'PR') ? 'pr.json' : 'outros.json';
@@ -331,20 +369,30 @@ async function loadDataByUF(uf) {
   }
   if (!data) {
     alert('Nao foi possivel carregar o catalogo.\n' + (lastErr ? String(lastErr) : 'Motivo desconhecido.') + '\n\nVerifique se os arquivos existem:\n • data/pr.json\n • data/outros.json\n\nDica: abra no navegador para testar:\n  http://127.0.0.1:5500/data/pr.json');
-    state.all = []; state.filtered = []; catalog.innerHTML = ''; hint.textContent = 'Nao foi possivel carregar o catalogo. Veja o alerta.'; hint.style.display = 'block'; updateCartBadge(); return;
+    state.all = []; state.filtered = []; catalog.innerHTML = ''; hint.textContent = ''; hint.style.display='none'; updateCartBadge(); return;
   }
   state.all = data.map(function (x) {
     return { nome: String(x.nome || x.modelo || x.Nome || '').trim(), ad: parseBR(x.ad || x.AD || x.sem_impostos || x.unit_sem || 0), an: parseBR(x.an || x.AN || x.com_impostos || x.unit_com || 0), qty: 1, incluir: 0 };
   }).filter(function (x) { return x.nome; });
-  const sug=document.getElementById('sug'); if (sug) { sug.innerHTML = state.all.map(function (it) { var v = it.nome.replace(/"/g, '&quot;'); return '<option value="' + v + '">'; }).join(''); }
-  state.filtered = []; renderCards(); hint.style.display = 'block'; hint.textContent = 'Use a busca acima para listar os modelos.'; updateCartBadge();
+
+  /* Preenche datalist e lista expandida */
+  const sug=document.getElementById('sug');
+  if (sug) {
+    sug.innerHTML = state.all.map(it => `<option value="${String(it.nome).replace(/"/g,'&quot;')}"></option>`).join('');
+  }
+  refreshOptions('');
+
+  state.filtered = [];
+  renderCards();
+  hint.textContent=''; hint.style.display='none';
+  updateCartBadge();
 }
 
 /* ===== Render ===== */
 function renderCards(){
   catalog.innerHTML='';
-  if(state.filtered.length===0){ hint.style.display='block'; return; }
-  hint.style.display='none';
+  hint.style.display='none'; // nunca exibir o hint
+  if(state.filtered.length===0){ return; }
   state.filtered.forEach(it=>{
     const card=document.createElement('article'); card.className='card'; card.dataset.selected=it.incluir?'1':'0';
     const media=document.createElement('div'); media.className='media';
@@ -370,10 +418,16 @@ function renderCards(){
 /* ===== Busca ===== */
 function applyFilter(){
   const q = cleanStr(inputSearch.value.trim());
-  if (!q) { state.filtered = []; renderCards(); hint.style.display = 'block'; hint.textContent = 'Use a busca acima para listar os modelos.'; return; }
+  if (!q) { state.filtered = []; renderCards(); hint.textContent=''; hint.style.display='none'; return; }
   state.filtered = state.all.filter(it => cleanStr(it.nome).includes(q));
   renderCards();
 }
+
+/* ===== Lista expandida: eventos ===== */
+inputSearch.addEventListener('focus', ()=>{ refreshOptions(inputSearch.value); openOptBox(); });
+inputSearch.addEventListener('input', ()=>{ refreshOptions(inputSearch.value); openOptBox(); });
+document.addEventListener('click', (e)=>{ if(!optBox.contains(e.target) && e.target!==inputSearch) closeOptBox(); });
+inputSearch.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeOptBox(); } });
 
 /* ===== Carrinho/Overlay ===== */
 function updateCartBadge(){ const count = state.all.filter(it => it.incluir).reduce((s,it)=>s + Number(it.qty||0), 0); const b=document.getElementById('cartBadge'); if(b){ b.textContent = count; b.style.display = count > 0 ? 'inline-block' : 'none'; } }
@@ -442,18 +496,24 @@ function promptSenhaBR(msg){
   const inLiq  = document.getElementById('cp_liq');
   const inImp  = document.getElementById('cp_imp');
   const inImg  = document.getElementById('cp_img');
+  const inQtd  = document.getElementById('cp_qtd');
 
-  function openModal(){ inNome.value=''; inLiq.value=''; inImp.value=''; inImg.value=''; modal.style.display='flex'; inNome.focus(); }
+  function openModal(){
+    inNome.value=''; inLiq.value=''; inImp.value=''; inImg.value='';
+    inQtd.value='1';
+    modal.style.display='flex'; inNome.focus();
+  }
   function closeModal(){ modal.style.display='none'; }
   function readFileAsDataURL(file){ return new Promise((res, rej)=>{ if(!file) return res(null); const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsDataURL(file); }); }
   async function saveCustom(){
     const ok = await promptSenhaBR('Informe a senha para adicionar produto personalizado:');
     if (!ok) return;
     const nome = inNome.value.trim(); const liq = Number((inLiq.value||'').replace(',','.')); const imp = Number((inImp.value||'').replace(',','.'));
+    const qtd = Math.max(1, parseInt(inQtd.value||'1',10) || 1);
     if(!nome){ alert('Informe o nome do produto.'); inNome.focus(); return; }
     if(!(liq>=0) || !(imp>=0)){ alert('Informe valores numéricos para líquido e impostos.'); (isNaN(liq)?inLiq:inImp).focus(); return; }
     let dataURL = null; if(inImg.files && inImg.files[0]){ try { dataURL = await readFileAsDataURL(inImg.files[0]); } catch {} }
-    const novo = { nome, ad: liq, an: imp, qty: 1, incluir: 1, img_custom: dataURL };
+    const novo = { nome, ad: liq, an: imp, qty: qtd, incluir: 1, img_custom: dataURL };
     state.all.unshift(novo);
     const q = cleanStr(inputSearch.value.trim());
     if(!q){ state.filtered = []; renderCards(); updateCartBadge(); closeModal(); return; }
@@ -470,7 +530,7 @@ function promptSenhaBR(msg){
 inputSearch.addEventListener('input', applyFilter);
 inputSearch.addEventListener('change', applyFilter);
 inputSearch.addEventListener('keydown', (e)=>{ if(e.key==='Enter') applyFilter(); });
-btnClearSearch.addEventListener('click',(e)=>{ e.preventDefault(); inputSearch.value=''; applyFilter(); inputSearch.focus(); });
+btnClearSearch.addEventListener('click',(e)=>{ e.preventDefault(); inputSearch.value=''; applyFilter(); inputSearch.focus(); refreshOptions(''); openOptBox(); });
 selectUF.addEventListener('change',async()=>{ state.uf=selectUF.value; await loadDataByUF(state.uf); });
 inputKM.addEventListener('input',e=>{ state.km=Math.max(0,parseInt(e.target.value||'0',10)); });
 
@@ -537,6 +597,7 @@ btnCloseQuote.addEventListener('click', async ()=>{
   sessionStorage.setItem('propostaData', JSON.stringify(dados));
   window.location.href = 'proposta.html';
 });
+
 /* ===== Boot ===== */
 (async function init(){ await loadDataByUF(state.uf); })();
 </script>
