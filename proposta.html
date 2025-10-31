@@ -54,7 +54,7 @@
   .split-v{ display:grid; grid-template-rows: 1fr 1fr; gap:4mm; height:190mm }
   .col{ display:flex; flex-direction:column; min-height:0 }
   .writebox{ border:1px solid var(--frame); border-radius:10px; padding:5mm; margin:0; flex:1 1 auto; min-height:0; line-height:1.6; outline:none; }
-  .writebox:empty:before{ content:"Digite aqui... (o texto some quando você começar a digitar)"; color:#9aa3c7 }
+  .writebox:empty:before{ content:""; color:#9aa3c7 }
 
   .subttl{ font-weight:800; margin:0 0 2mm; font-size:14px }
   .uploadbox{ display:flex; flex-direction:column; gap:3mm; flex:1 1 auto; min-height:0 }
@@ -410,6 +410,31 @@ document.addEventListener("DOMContentLoaded", function(){
   </div>
 </div>
 
+<!-- ====== NOVOS POPUPS: senha (mascarada) e edição da forma de pagamento ====== -->
+<div id="pwdPop" class="popup" hidden>
+  <div class="popup__box">
+    <h3>Digite a senha para alteração da forma de pagamento</h3>
+    <input id="pwdInput" type="password" placeholder="Senha" style="width:100%;padding:8px 10px;border:1px solid #cfd7ff;border-radius:8px">
+    <div id="pwdErr" style="display:none;color:#b91c1c;font-size:12px;margin-top:6px">Senha incorreta. Tente novamente.</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+      <button id="pwdCancel" class="btn">Cancelar</button>
+      <button id="pwdOk" class="btn">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div id="fpEditPop" class="popup" hidden>
+  <div class="popup__box">
+    <h3>Editar forma de pagamento</h3>
+    <textarea id="fpEditText" style="width:100%;min-height:120px;padding:8px 10px;border:1px solid #cfd7ff;border-radius:8px"></textarea>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+      <button id="fpReset" class="btn" title="Voltar ao padrão">Padrão</button>
+      <button id="fpCancel" class="btn">Cancelar</button>
+      <button id="fpOk" class="btn">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const money = v => isFinite(v) ? v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '-';
 function updateDocTitle(){
@@ -649,37 +674,73 @@ function loadWithFallback(img, list, i=0){ if(!list||!list.length){ img.style.di
 })();
 window.addEventListener('beforeprint', updateDocTitle);
 
-/* === Nova funcionalidade: editar Forma de pagamento (temporário, sessão) ===
-   - botão com id "btnMudarPagamento"
-   - span com id "formaPagamentoSpan"
-   - senha utilizada: 121419 (mesma que você informou)
-   - alteração só para a sessão (não grava em arquivo)
-*/
+/* === Senha mascarada + editor de forma de pagamento (sessão) === */
 (function(){
   const BTN_ID = 'btnMudarPagamento';
   const SPAN_ID = 'formaPagamentoSpan';
-  const PASSWORD = '121419'; // senha conforme solicitado
+  const PASSWORD = '121419';
+  const DEFAULT_TEXT = 'a negociar no fechamento do pedido.';
 
   const btn = document.getElementById(BTN_ID);
   const span = document.getElementById(SPAN_ID);
 
+  const pwdPop = document.getElementById('pwdPop');
+  const pwdInput = document.getElementById('pwdInput');
+  const pwdErr = document.getElementById('pwdErr');
+  const pwdOk = document.getElementById('pwdOk');
+  const pwdCancel = document.getElementById('pwdCancel');
+
+  const editPop = document.getElementById('fpEditPop');
+  const editText = document.getElementById('fpEditText');
+  const editOk = document.getElementById('fpOk');
+  const editCancel = document.getElementById('fpCancel');
+  const editReset = document.getElementById('fpReset');
+
+  function open(el){ el.hidden=false; setTimeout(()=>el.querySelector('input,textarea,button')?.focus(),0); }
+  function close(el){ el.hidden=true; }
+
   if(!btn || !span) return;
 
-  btn.addEventListener('click', function(){
-    // pedir senha
-    const entrada = prompt('Digite a senha para alteração da forma de pagamento:');
-    if(entrada === null) return; // cancelou
-    if(entrada !== PASSWORD){
-      alert('Senha incorreta!');
-      return;
-    }
-
-    // senha correta -> pedir novo texto
-    const novo = prompt('Informe o texto da nova forma de pagamento:', span.textContent);
-    if(novo === null) return; // cancelou
-    // atualiza apenas na sessão
-    span.textContent = novo.trim() ? novo.trim() : 'a negociar no fechamento do pedido.';
+  // Abrir modal de senha
+  btn.addEventListener('click', ()=>{
+    pwdErr.style.display='none';
+    pwdInput.value='';
+    open(pwdPop);
   });
+
+  // Submeter senha
+  function submitPwd(){
+    if((pwdInput.value||'').trim() === PASSWORD){
+      close(pwdPop);
+      editText.value = span.textContent.trim();
+      open(editPop);
+    }else{
+      pwdErr.style.display='block';
+      pwdInput.select();
+    }
+  }
+  pwdOk.addEventListener('click', submitPwd);
+  pwdInput.addEventListener('keydown', e=>{ if(e.key==='Enter') submitPwd(); });
+
+  // Cancelamentos/fechamentos
+  pwdCancel.addEventListener('click', ()=>close(pwdPop));
+  pwdPop.addEventListener('click', e=>{ if(e.target===pwdPop) close(pwdPop); });
+  editCancel.addEventListener('click', ()=>close(editPop));
+  editPop.addEventListener('click', e=>{ if(e.target===editPop) close(editPop); });
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape'){
+      if(!pwdPop.hidden) close(pwdPop);
+      if(!editPop.hidden) close(editPop);
+    }
+  });
+
+  // Editor
+  editOk.addEventListener('click', ()=>{
+    const txt = (editText.value||'').trim();
+    span.textContent = txt ? txt : DEFAULT_TEXT;
+    close(editPop);
+  });
+  editReset.addEventListener('click', ()=>{ editText.value = DEFAULT_TEXT; editText.focus(); });
 })();
 </script>
 </body>
