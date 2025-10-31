@@ -90,6 +90,7 @@
   .tbl th{background:#eef2ff; text-align:left}
   .right{text-align:right; font-variant-numeric:tabular-nums}
   .tbl tfoot td{font-weight:800}
+  .tbl tr{break-inside:avoid}
 
   @media print{
     @page{ size:A4 landscape; margin:12mm }
@@ -108,19 +109,6 @@
     #btnClearSearch, #btnClear{ width:100% } .grid{ grid-template-columns:1fr }
     .sheet{ margin:12px; max-height:90vh } .sel-grid{ grid-template-columns:1fr }
   }
-
-  /* === Lista de opções (completa) === */
-  #searchField{ position:relative; }
-  .optbox{
-    position:absolute; left:0; right:0; top:100%; margin-top:6px;
-    background:#1f2937; color:#e9efff; border:1px solid #334155; border-radius:10px;
-    max-height:320px; overflow:auto; display:none; z-index:30; box-shadow:0 10px 30px rgba(0,0,0,.25);
-  }
-  .optbox.show{ display:block; }
-  .optbox .opt{ padding:8px 10px; border-bottom:1px solid #2b364f; cursor:pointer; }
-  .optbox .opt:last-child{ border-bottom:none; }
-  .optbox .opt:hover{ background:#2f395a; }
-  .optbox .nores{ padding:10px; color:#9fb3ff; }
 </style>
 </head>
 
@@ -147,11 +135,10 @@
   <div class="brand-mini" aria-hidden="true"><img src="imagens/logo-branca.png" alt="" /></div>
 
   <div class="search-wrap">
-    <div id="searchField" style="flex:1">
+    <div style="flex:1">
       <label>Pesquisar modelo</label>
       <input id="search" list="sug" placeholder="digite parte do nome..." />
       <datalist id="sug"></datalist>
-      <div id="optBox" class="optbox" role="listbox" aria-label="Todos os modelos"></div>
     </div>
     <button class="btn secondary" id="btnClearSearch">Limpar busca</button>
   </div>
@@ -173,6 +160,7 @@
       <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
       <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
       <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+      <!-- Sem "Outros": UF ≠ PR já usa outros.json automaticamente -->
     </select>
   </div>
 
@@ -181,6 +169,7 @@
     <input id="km" type="number" min="0" step="1" value="0" />
   </div>
 
+  <!-- Botão Produto Personalizado -->
   <div>
     <label>&nbsp;</label>
     <button class="btn" id="btnAddCustom">Adicionar personalizado</button>
@@ -188,7 +177,7 @@
 </section>
 
 <main>
-  <!-- REMOVIDO: hint (fica escondido e sem texto) -->
+  <!-- Hint oculto como combinado -->
   <div id="hint" class="placeholder" style="display:none"></div>
   <section id="catalog" class="grid"></section>
 </main>
@@ -227,7 +216,7 @@
   </div>
 </div>
 
-<!-- Preview -->
+<!-- Preview (opcional) -->
 <div class="overlay" id="overlay">
   <div class="sheet" id="sheet">
     <header>
@@ -331,28 +320,6 @@ const $=(s,e=document)=>e.querySelector(s);
 const catalog=$('#catalog'), hint=$('#hint'), inputSearch=$('#search'), selectUF=$('#uf'), inputKM=$('#km');
 const btnClear=$('#btnClear'), btnClearSearch=$('#btnClearSearch'), btnCloseQuote=$('#btnCloseQuote');
 
-/* ===== Lista expandida ===== */
-const optBox = document.getElementById('optBox');
-function closeOptBox(){ optBox.classList.remove('show'); }
-function openOptBox(){ if(optBox.innerHTML.trim()==='') refreshOptions(''); optBox.classList.add('show'); }
-function refreshOptions(q){
-  const query = cleanStr(q||'');
-  const items = state.all.filter(it => cleanStr(it.nome).includes(query));
-  if(items.length===0){
-    optBox.innerHTML = '<div class="nores">Nenhum modelo encontrado.</div>';
-    return;
-  }
-  optBox.innerHTML = items.map(it => `<div class="opt" data-name="${String(it.nome).replace(/"/g,'&quot;')}">${it.nome}</div>`).join('');
-  optBox.querySelectorAll('.opt').forEach(el=>{
-    el.addEventListener('click', ()=>{
-      const name = el.getAttribute('data-name')||'';
-      inputSearch.value = name;
-      closeOptBox();
-      applyFilter();
-    });
-  });
-}
-
 /* ===== Carregar JSON por UF ===== */
 async function loadDataByUF(uf) {
   const file = (uf === 'PR') ? 'pr.json' : 'outros.json';
@@ -371,16 +338,24 @@ async function loadDataByUF(uf) {
     alert('Nao foi possivel carregar o catalogo.\n' + (lastErr ? String(lastErr) : 'Motivo desconhecido.') + '\n\nVerifique se os arquivos existem:\n • data/pr.json\n • data/outros.json\n\nDica: abra no navegador para testar:\n  http://127.0.0.1:5500/data/pr.json');
     state.all = []; state.filtered = []; catalog.innerHTML = ''; hint.textContent = ''; hint.style.display='none'; updateCartBadge(); return;
   }
+
   state.all = data.map(function (x) {
-    return { nome: String(x.nome || x.modelo || x.Nome || '').trim(), ad: parseBR(x.ad || x.AD || x.sem_impostos || x.unit_sem || 0), an: parseBR(x.an || x.AN || x.com_impostos || x.unit_com || 0), qty: 1, incluir: 0 };
+    return {
+      nome: String(x.nome || x.modelo || x.Nome || '').trim(),
+      ad: parseBR(x.ad || x.AD || x.sem_impostos || x.unit_sem || 0),
+      an: parseBR(x.an || x.AN || x.com_impostos || x.unit_com || 0),
+      qty: 1,
+      incluir: 0
+    };
   }).filter(function (x) { return x.nome; });
 
-  /* Preenche datalist e lista expandida */
+  // Preenche o datalist nativo (azul)
   const sug=document.getElementById('sug');
   if (sug) {
-    sug.innerHTML = state.all.map(it => `<option value="${String(it.nome).replace(/"/g,'&quot;')}"></option>`).join('');
+    sug.innerHTML = state.all
+      .map(it => `<option value="${String(it.nome).replace(/"/g,'&quot;')}"></option>`)
+      .join('');
   }
-  refreshOptions('');
 
   state.filtered = [];
   renderCards();
@@ -391,13 +366,20 @@ async function loadDataByUF(uf) {
 /* ===== Render ===== */
 function renderCards(){
   catalog.innerHTML='';
-  hint.style.display='none'; // nunca exibir o hint
+  // hint sempre oculto
   if(state.filtered.length===0){ return; }
   state.filtered.forEach(it=>{
     const card=document.createElement('article'); card.className='card'; card.dataset.selected=it.incluir?'1':'0';
     const media=document.createElement('div'); media.className='media';
     media.innerHTML=`<img alt="${it.nome}" style="display:none">`;
-    const imgEl=media.querySelector('img'); if (it.img_custom) { imgEl.onerror=()=>{imgEl.style.display='none'}; imgEl.onload=()=>{imgEl.style.display='block'}; imgEl.src=it.img_custom; } else { loadImageWithFallback(imgEl,candidatesFor(it.nome)); }
+    const imgEl=media.querySelector('img');
+    if (it.img_custom) {
+      imgEl.onerror=()=>{imgEl.style.display='none'};
+      imgEl.onload=()=>{imgEl.style.display='block'};
+      imgEl.src=it.img_custom;
+    } else {
+      loadImageWithFallback(imgEl,candidatesFor(it.nome));
+    }
     const body=document.createElement('div'); body.className='body';
     body.innerHTML=`
       <div class="title">${it.nome}</div>
@@ -409,8 +391,12 @@ function renderCards(){
         <div style="max-width:170px"><label>Quantidade</label><input class="qty" type="number" min="1" step="1" value="${it.qty}"></div>
         <div style="display:flex;align-items:flex-end"><button class="include-btn ${it.incluir? 'on':''}" data-on="${it.incluir?1:0}">${it.incluir?'Remover':'Adicionar ao carrinho'}</button></div>
       </div>`;
-    body.querySelector('.qty').addEventListener('input',e=>{ const v=Math.max(1,parseInt(e.target.value||'1',10)); it.qty=v; e.target.value=v; updateCartBadge(); });
-    body.querySelector('.include-btn').addEventListener('click',()=>{ it.incluir=it.incluir?0:1; renderCards(); updateCartBadge(); });
+    body.querySelector('.qty').addEventListener('input',e=>{
+      const v=Math.max(1,parseInt(e.target.value||'1',10)); it.qty=v; e.target.value=v; updateCartBadge();
+    });
+    body.querySelector('.include-btn').addEventListener('click',()=>{
+      it.incluir=it.incluir?0:1; renderCards(); updateCartBadge();
+    });
     card.append(media,body); catalog.appendChild(card);
   });
 }
@@ -423,35 +409,72 @@ function applyFilter(){
   renderCards();
 }
 
-/* ===== Lista expandida: eventos ===== */
-inputSearch.addEventListener('focus', ()=>{ refreshOptions(inputSearch.value); openOptBox(); });
-inputSearch.addEventListener('input', ()=>{ refreshOptions(inputSearch.value); openOptBox(); });
-document.addEventListener('click', (e)=>{ if(!optBox.contains(e.target) && e.target!==inputSearch) closeOptBox(); });
-inputSearch.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ closeOptBox(); } });
-
 /* ===== Carrinho/Overlay ===== */
-function updateCartBadge(){ const count = state.all.filter(it => it.incluir).reduce((s,it)=>s + Number(it.qty||0), 0); const b=document.getElementById('cartBadge'); if(b){ b.textContent = count; b.style.display = count > 0 ? 'inline-block' : 'none'; } }
-function buildCart(){
-  const km = Math.max(0, parseInt(inputKM.value||'0',10)); const custo = km * TARIFA_KM; const itensSel = state.all.filter(it=>it.incluir);
-  const cartSelGrid=document.getElementById('cartSelGrid'), cartTbody=document.getElementById('cartTbody'), cartSubLiq=document.getElementById('cartSubLiq'), cartSubImp=document.getElementById('cartSubImp'), cartTotGeral=document.getElementById('cartTotGeral'), cartMeta=document.getElementById('cartMeta');
-  cartSelGrid.innerHTML=''; cartTbody.innerHTML=''; cartSubLiq.textContent='Subtotal valor líquido'; cartSubImp.textContent='Subtotal valor c/ impostos'; cartTotGeral.textContent='Total geral'; cartMeta.textContent=`UF: ${selectUF.value.toUpperCase()} • Distância: ${inputKM.value||0} Km • ${itensSel.length} item(ns)`;
-  if(itensSel.length===0){ cartSelGrid.innerHTML='<div style="grid-column:1/-1;padding:10px;background:#fff;border:1px dashed #a3b0ff;border-radius:10px;text-align:center">Nenhum item no carrinho.</div>'; return; }
-  itensSel.forEach((it, idx)=>{ const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0); const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
-    const box=document.createElement('div'); box.className='sel-item'; box.innerHTML=`<div class="imgbox"><img alt="${it.nome}"></div><div class="info"><h4>${it.nome}</h4><div class="row"><div>Total Líq.: <b>${money(totalLiq)}</b></div><div>Total c/ Imp.: <b>${money(totalImp)}</b></div></div><div>Qtd: <b>${it.qty}</b></div></div>`;
-    const img=box.querySelector('img'); if (it.img_custom) img.src = it.img_custom; else loadImageWithFallback(img,candidatesFor(it.nome)); cartSelGrid.appendChild(box);
-    const tr=document.createElement('tr'); tr.innerHTML=`<td>${it.nome}</td><td class="right">${it.qty}</td><td class="right">${money(totalLiq)}</td><td class="right">${money(totalImp)}</td>`; cartTbody.appendChild(tr);
-  });
-  let subtotalLiq=0, subtotalImp=0; itensSel.forEach((it,idx)=>{ subtotalLiq += (it.ad * it.qty) + (idx===0 ? custo : 0); subtotalImp += (it.an * it.qty) + (idx===0 ? custo : 0); });
-  cartSubLiq.textContent = `Subtotal valor líquido       ${money(subtotalLiq)}`; cartSubImp.textContent  = `Subtotal valor c/ impostos   ${money(subtotalImp)}`; cartTotGeral.textContent= `Total geral                   ${money(subtotalImp)}`;
+function updateCartBadge(){
+  const count = state.all
+    .filter(it => it.incluir)
+    .reduce((s,it)=>s + Number(it.qty||0), 0);
+  const b=document.getElementById('cartBadge');
+  if(b){ b.textContent = count; b.style.display = count > 0 ? 'inline-block' : 'none'; }
 }
-document.getElementById('btnCart')?.addEventListener('click', () => { buildCart(); document.getElementById('cartOverlay')?.classList.add('show'); });
-document.getElementById('btnCloseCart')?.addEventListener('click', () => { document.getElementById('cartOverlay')?.classList.remove('show'); });
+function buildCart(){
+  const km = Math.max(0, parseInt(inputKM.value||'0',10));
+  const custo = km * TARIFA_KM;
+  const itensSel = state.all.filter(it=>it.incluir);
+  const cartSelGrid=document.getElementById('cartSelGrid'),
+        cartTbody=document.getElementById('cartTbody'),
+        cartSubLiq=document.getElementById('cartSubLiq'),
+        cartSubImp=document.getElementById('cartSubImp'),
+        cartTotGeral=document.getElementById('cartTotGeral'),
+        cartMeta=document.getElementById('cartMeta');
+
+  cartSelGrid.innerHTML=''; cartTbody.innerHTML='';
+  cartSubLiq.textContent='Subtotal valor líquido';
+  cartSubImp.textContent='Subtotal valor c/ impostos';
+  cartTotGeral.textContent='Total geral';
+  cartMeta.textContent=`UF: ${selectUF.value.toUpperCase()} • Distância: ${inputKM.value||0} Km • ${itensSel.length} item(ns)`;
+
+  if(itensSel.length===0){
+    cartSelGrid.innerHTML='<div style="grid-column:1/-1;padding:10px;background:#fff;border:1px dashed #a3b0ff;border-radius:10px;text-align:center">Nenhum item no carrinho.</div>';
+    return;
+  }
+  itensSel.forEach((it, idx)=>{
+    const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
+    const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
+    const box=document.createElement('div'); box.className='sel-item';
+    box.innerHTML=`<div class="imgbox"><img alt="${it.nome}"></div><div class="info"><h4>${it.nome}</h4><div class="row"><div>Total Líq.: <b>${money(totalLiq)}</b></div><div>Total c/ Imp.: <b>${money(totalImp)}</b></div></div><div>Qtd: <b>${it.qty}</b></div></div>`;
+    const img=box.querySelector('img');
+    if (it.img_custom) img.src = it.img_custom; else loadImageWithFallback(img,candidatesFor(it.nome));
+    cartSelGrid.appendChild(box);
+
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${it.nome}</td><td class="right">${it.qty}</td><td class="right">${money(totalLiq)}</td><td class="right">${money(totalImp)}</td>`;
+    cartTbody.appendChild(tr);
+  });
+
+  let subtotalLiq=0, subtotalImp=0;
+  itensSel.forEach((it,idx)=>{
+    subtotalLiq += (it.ad * it.qty) + (idx===0 ? custo : 0);
+    subtotalImp += (it.an * it.qty) + (idx===0 ? custo : 0);
+  });
+  cartSubLiq.textContent = `Subtotal valor líquido       ${money(subtotalLiq)}`;
+  cartSubImp.textContent  = `Subtotal valor c/ impostos   ${money(subtotalImp)}`;
+  cartTotGeral.textContent= `Total geral                   ${money(subtotalImp)}`;
+}
+document.getElementById('btnCart')?.addEventListener('click', () => {
+  buildCart(); document.getElementById('cartOverlay')?.classList.add('show');
+});
+document.getElementById('btnCloseCart')?.addEventListener('click', () => {
+  document.getElementById('cartOverlay')?.classList.remove('show');
+});
 
 /* ========= Confirm + Senha ========= */
 function confirmBR(msg){
   return new Promise((resolve)=>{
-    const mask=document.createElement('div'); mask.style.cssText="position:fixed;inset:0;background:rgba(18,24,40,.6);display:flex;align-items:center;justify-content:center;z-index:99999";
-    const box=document.createElement('div'); box.style.cssText="width:min(420px,92vw);background:#1f2937;color:#e5e7eb;border:1px solid #334155;border-radius:12px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35);font:14px/1.4 system-ui,sans-serif";
+    const mask=document.createElement('div');
+    mask.style.cssText="position:fixed;inset:0;background:rgba(18,24,40,.6);display:flex;align-items:center;justify-content:center;z-index:99999";
+    const box=document.createElement('div');
+    box.style.cssText="width:min(420px,92vw);background:#1f2937;color:#e5e7eb;border:1px solid #334155;border-radius:12px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35);font:14px/1.4 system-ui,sans-serif";
     box.innerHTML='<div style="margin-bottom:10px">'+msg+'</div><div style="display:flex;gap:10px;justify-content:flex-end"><button id="btnNao" style="padding:8px 12px;border:1px solid #475569;border-radius:10px;background:#0f172a;color:#e5e7eb;cursor:pointer">Não</button><button id="btnSim" style="padding:8px 12px;border:1px solid #15803d;border-radius:10px;background:#16a34a;color:#fff;cursor:pointer">Sim</button></div>';
     mask.appendChild(box); document.body.appendChild(mask);
     const cleanup=v=>{document.removeEventListener('keydown',onKey); mask.remove(); resolve(v);};
@@ -464,8 +487,10 @@ function confirmBR(msg){
 }
 function promptSenhaBR(msg){
   return new Promise((resolve)=>{
-    const mask=document.createElement('div'); mask.style.cssText="position:fixed;inset:0;background:rgba(18,24,40,.6);display:flex;align-items:center;justify-content:center;z-index:99999";
-    const box=document.createElement('div'); box.style.cssText="width:min(420px,92vw);background:#1f2937;color:#e5e7eb;border:1px solid #334155;border-radius:12px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35);font:14px/1.4 system-ui,sans-serif";
+    const mask=document.createElement('div');
+    mask.style.cssText="position:fixed;inset:0;background:rgba(18,24,40,.6);display:flex;align-items:center;justify-content:center;z-index:99999";
+    const box=document.createElement('div');
+    box.style.cssText="width:min(420px,92vw);background:#1f2937;color:#e5e7eb;border:1px solid #334155;border-radius:12px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.35);font:14px/1.4 system-ui,sans-serif";
     box.innerHTML=`
       <div style="margin-bottom:8px">${msg}</div>
       <input id="pwdIn" type="password" placeholder="Digite a senha" style="width:100%;margin:6px 0 10px;padding:8px 10px;border-radius:10px;border:1px solid #475569;background:#0f172a;color:#e5e7eb;outline:none">
@@ -478,7 +503,11 @@ function promptSenhaBR(msg){
     const inp=box.querySelector('#pwdIn'), err=box.querySelector('#pwdErr');
     const cleanup=v=>{document.removeEventListener('keydown',onKey); mask.remove(); resolve(v);};
     const onKey=e=>{if(e.key==='Escape')cleanup(false); if(e.key==='Enter')submit();};
-    function submit(){ const v=String(inp.value||'').trim(); if(v==='121419') cleanup(true); else { err.style.display='block'; inp.select(); } }
+    function submit(){
+      const v=String(inp.value||'').trim();
+      if(v==='121419') cleanup(true);
+      else { err.style.display='block'; inp.select(); }
+    }
     box.querySelector('#pwdOk').addEventListener('click', submit);
     box.querySelector('#pwdCancel').addEventListener('click', ()=>cleanup(false));
     document.addEventListener('keydown', onKey);
@@ -504,21 +533,40 @@ function promptSenhaBR(msg){
     modal.style.display='flex'; inNome.focus();
   }
   function closeModal(){ modal.style.display='none'; }
-  function readFileAsDataURL(file){ return new Promise((res, rej)=>{ if(!file) return res(null); const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsDataURL(file); }); }
+  function readFileAsDataURL(file){
+    return new Promise((res, rej)=>{
+      if(!file) return res(null);
+      const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsDataURL(file);
+    });
+  }
   async function saveCustom(){
     const ok = await promptSenhaBR('Informe a senha para adicionar produto personalizado:');
     if (!ok) return;
-    const nome = inNome.value.trim(); const liq = Number((inLiq.value||'').replace(',','.')); const imp = Number((inImp.value||'').replace(',','.'));
+
+    const nome = inNome.value.trim();
+    const liq = Number((inLiq.value||'').replace(',','.'));
+    const imp = Number((inImp.value||'').replace(',','.'));
     const qtd = Math.max(1, parseInt(inQtd.value||'1',10) || 1);
+
     if(!nome){ alert('Informe o nome do produto.'); inNome.focus(); return; }
-    if(!(liq>=0) || !(imp>=0)){ alert('Informe valores numéricos para líquido e impostos.'); (isNaN(liq)?inLiq:inImp).focus(); return; }
-    let dataURL = null; if(inImg.files && inImg.files[0]){ try { dataURL = await readFileAsDataURL(inImg.files[0]); } catch {} }
+    if(!(liq>=0) || !(imp>=0)){
+      alert('Informe valores numéricos para líquido e impostos.');
+      (isNaN(liq)?inLiq:inImp).focus(); return;
+    }
+
+    let dataURL = null;
+    if(inImg.files && inImg.files[0]){
+      try { dataURL = await readFileAsDataURL(inImg.files[0]); } catch {}
+    }
+
     const novo = { nome, ad: liq, an: imp, qty: qtd, incluir: 1, img_custom: dataURL };
     state.all.unshift(novo);
+
     const q = cleanStr(inputSearch.value.trim());
     if(!q){ state.filtered = []; renderCards(); updateCartBadge(); closeModal(); return; }
     applyFilter(); updateCartBadge(); closeModal();
   }
+
   btnOpen?.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); });
   btnCancel?.addEventListener('click', (e)=>{ e.preventDefault(); closeModal(); });
   btnSave?.addEventListener('click', (e)=>{ e.preventDefault(); saveCustom(); });
@@ -530,9 +578,15 @@ function promptSenhaBR(msg){
 inputSearch.addEventListener('input', applyFilter);
 inputSearch.addEventListener('change', applyFilter);
 inputSearch.addEventListener('keydown', (e)=>{ if(e.key==='Enter') applyFilter(); });
-btnClearSearch.addEventListener('click',(e)=>{ e.preventDefault(); inputSearch.value=''; applyFilter(); inputSearch.focus(); refreshOptions(''); openOptBox(); });
-selectUF.addEventListener('change',async()=>{ state.uf=selectUF.value; await loadDataByUF(state.uf); });
-inputKM.addEventListener('input',e=>{ state.km=Math.max(0,parseInt(e.target.value||'0',10)); });
+btnClearSearch.addEventListener('click',(e)=>{
+  e.preventDefault(); inputSearch.value=''; applyFilter(); inputSearch.focus();
+});
+selectUF.addEventListener('change',async()=>{
+  state.uf=selectUF.value; await loadDataByUF(state.uf);
+});
+inputKM.addEventListener('input',e=>{
+  state.km=Math.max(0,parseInt(e.target.value||'0',10));
+});
 
 btnClear.addEventListener('click', (e) => {
   e.preventDefault();
@@ -570,12 +624,18 @@ function coletarDadosParaProposta(){
 
 btnCloseQuote.addEventListener('click', async ()=>{
   const dados = coletarDadosParaProposta();
-  if(!dados.itens || dados.itens.length===0){ alert('Selecione ao menos 1 item para gerar a proposta.'); return; }
+  if(!dados.itens || dados.itens.length===0){
+    alert('Selecione ao menos 1 item para gerar a proposta.'); return;
+  }
   const querSeg = await confirmBR('Deseja adicionar célula de segurança?');
   if (querSeg) {
     const ok = await promptSenhaBR('Informe a senha para adicionar a célula de segurança:');
     if (ok) {
-      const PRECO = { 'SEÇÃO BIOMBO 1,2×2M': 2473.42,'BARREIRA DE LUZ 1,7M': 27207.60,'BARREIRA DE LUZ 1M': 18138.40,'SEMAFORO 4 CORES': 824.47,'FECHADURA SEGURANÇA/SENSOR': 10718.14,'BOTOEIRA BIMANUAL': 9069.20,'CLP PROGRAMAÇÃO': 15664.98,'CLP SEGURANÇA': 11377.72,'RELÊ DE SEGURANÇA': 3297.89,'CABEAMENTO/CONECTORES': 16489.45 };
+      const PRECO = {
+        'SEÇÃO BIOMBO 1,2×2M': 2473.42,'BARREIRA DE LUZ 1,7M': 27207.60,'BARREIRA DE LUZ 1M': 18138.40,
+        'SEMAFORO 4 CORES': 824.47,'FECHADURA SEGURANÇA/SENSOR': 10718.14,'BOTOEIRA BIMANUAL': 9069.20,
+        'CLP PROGRAMAÇÃO': 15664.98,'CLP SEGURANÇA': 11377.72,'RELÊ DE SEGURANÇA': 3297.89,'CABEAMENTO/CONECTORES': 16489.45
+      };
       const lista=[]; let base=0;
       for (const [nome, preco] of Object.entries(PRECO)) {
         const resp = prompt('Quantidade para '+nome+' (R$ '+preco.toFixed(2)+'):', '0');
@@ -589,7 +649,11 @@ btnCloseQuote.addEventListener('click', async ()=>{
         const ufSel = String(document.querySelector('#uf')?.value || 'PR').toUpperCase();
         const unit_liq = +(base * 1.45).toFixed(2);
         const unit_imp = +(unit_liq * (ufSel==='PR'?1.12245:1.0765)).toFixed(2);
-        dados.itens.push({ nome:'Célula de segurança', qty:1, unit_liq, unit_imp, img_cands:['imagens/CELULA DE SEGURANCA.png'], desc_default: descTexto, frete_liq:0, frete_imp:0 });
+        dados.itens.push({
+          nome:'Célula de segurança', qty:1, unit_liq, unit_imp,
+          img_cands:['imagens/CELULA DE SEGURANCA.png'],
+          desc_default: descTexto, frete_liq:0, frete_imp:0
+        });
         dados.celulaSeg = lista;
       }
     }
