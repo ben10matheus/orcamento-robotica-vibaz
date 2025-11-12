@@ -5,17 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Proposta - VIBAZ</title>
 <style>
-  #pagina6 .itemcard { display:block !important; border:none !important; margin-bottom:8px; }
-  #pagina6 .itemname { white-space:nowrap; text-align:center; font-weight:800; font-size:14px; margin-bottom:4px; }
-  #pagina6 .writebox { border:none !important; padding:0 !important; margin:0 auto !important; min-height:auto !important; font-size:13px; line-height:1.5; text-align:center; }
-
+  /* ====== ESTILO BASE ====== */
   @page { size: A4; margin: 0 12.7mm; }
   :root{ --ink:#0e1222; --frame:#000; --muted:#303a60; }
-  html,body{ height:100% }
-  body{ margin:0; background:#dfe7ff; color:var(--ink); font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial }
+  html,body{ height:100%; margin:0; background:#dfe7ff; color:var(--ink); font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial }
 
-  .page{ width:210mm; height:297mm; margin:20px auto; background:#fff; position:relative; box-sizing:border-box; border:none; box-shadow:0 8px 24px rgba(0,0,0,.08); }
-  @media screen{ .page{ border:2px solid #000; border-radius:0; } }
+  .page{ width:210mm; height:297mm; margin:20px auto; background:#fff; position:relative; box-sizing:border-box; border:none; box-shadow:0 8px 24px rgba(0,0,0,.08); overflow:hidden }
+  @media screen{ .page{ border:2px solid #000; } }
   @media print{ body{ background:#fff } .page{ width: calc(210mm - 25.4mm); height:297mm; margin:0 auto; border:none; box-shadow:none } .no-print{ display:none !important } }
 
   .head,.rodapeimg{ border:none; padding:0 }
@@ -49,13 +45,13 @@
   .capa{ margin:6mm 0 5mm; display:flex; align-items:center; justify-content:center; min-height:70mm }
   .capa img{ max-width:100%; max-height:70mm; object-fit:contain; display:block }
 
-  .page-2{ padding:0 0 40mm 0 }
-  .sec-titulo{ font-weight:800; text-decoration:underline; margin:6mm 0 3mm }
-  .split-v{ display:grid; grid-template-rows: 1fr 1fr; gap:4mm; height:190mm }
-  .col{ display:flex; flex-direction:column; min-height:0 }
+  .page-2,.page-3,.page-4,.page-5,.page-6,.page-7,.page-8{ padding:0 0 40mm 0 }
+  .sec-titulo,.sec-titulo-4,.sec-titulo-5,.sec-titulo-6,.sec-titulo-7,.sec-titulo-8{ font-weight:800; text-decoration:underline; margin:6mm 0 3mm }
+
   .writebox{ border:1px solid var(--frame); border-radius:10px; padding:5mm; margin:0; flex:1 1 auto; min-height:0; line-height:1.6; outline:none; }
   .writebox:empty:before{ content:""; color:#9aa3c7 }
 
+  /* Uploads (págs. 2 e 3) */
   .subttl{ font-weight:800; margin:0 0 2mm; font-size:14px }
   .uploadbox{ display:flex; flex-direction:column; gap:3mm; flex:1 1 auto; min-height:0 }
   .dropzone{ border:2px dashed #9aa3c7; border-radius:10px; padding:6mm; text-align:center; color:#647096; user-select:none; }
@@ -63,63 +59,48 @@
   .dropzone .btn{ background:#44507c; color:#fff; border:1px solid #cfd7ff; border-radius:10px; padding:8px 12px; cursor:pointer }
   .dropzone .btn:hover{ background:#3b486f }
   .preview{ flex:1 1 auto; min-height:0; display:grid; grid-template-columns:1fr 1fr; gap:4mm; }
-  .imgcard{ position:relative; border:1px solid #cfd7ff; border-radius:10px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#fff }
+  .imgcard{ position:relative; border:1px solid #cfd7ff; border-radius:10px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#fff; break-inside:avoid; page-break-inside:avoid; }
   .imgcard img{ max-width:100%; max-height:100%; display:block; object-fit:contain }
   .imgremove{ position:absolute; top:6px; right:6px; background:#0008; color:#fff; border:none; border-radius:8px; padding:6px 8px; font-size:12px; cursor:pointer }
   @media print{ .dropzone,.imgremove{ display:none !important } .imgcard{ border:none } }
 
-  .page-3{ padding:0 0 40mm 0 }
-  .important-title{ font-weight:800; text-decoration:underline; margin:6mm 0 2mm }
-  .important-text{ margin:0 0 3mm }
-
-  .page-4{ padding:0 0 40mm 0 }
-  .sec-titulo-4{ font-weight:800; text-decoration:underline; margin:6mm 0 3mm }
+  /* Cards da Descrição (pág.4) */
   .itens{ display:flex; flex-direction:column; gap:4mm }
-  .itemcard{ border:1px solid var(--frame); border-radius:10px; padding:4mm; display:grid; grid-template-columns:48mm 1fr; gap:4mm; align-items:start }
+  .itemcard{ border:1px solid var(--frame); border-radius:10px; padding:4mm; display:grid; grid-template-columns:48mm 1fr; gap:4mm; align-items:start; break-inside:avoid; page-break-inside:avoid; }
   .itemimg{ width:100%; height:42mm; border:1px dashed #cfd7ff; border-radius:8px; display:flex; align-items:center; justify-content:center; background:#fff; overflow:hidden }
   .itemimg img{ max-width:100%; max-height:100%; object-fit:contain; display:block }
   .itemname{ font-weight:800; margin-bottom:2mm }
+  .desc4{ min-height:28mm; margin-top:3mm }
 
-  .page-5{ padding:0 0 40mm 0 }
-  .sec-titulo-5{ font-weight:800; text-decoration:underline; margin:6mm 0 3mm }
+  /* Tabela (pág. 5) */
   table.tbl5{ width:100%; border-collapse:separate; border-spacing:0; border:1px solid #000; border-radius:10px; overflow:hidden; margin-top:3mm }
   .tbl5 th,.tbl5 td{ border:1px solid #000; padding:6px 8px }
   .tbl5 th{ background:#eef2ff; text-align:left }
   .right{ text-align:right; font-variant-numeric:tabular-nums }
   .tot{ font-weight:800 }
-
-  .page-6{ padding:0 0 40mm 0 }
-  .sec-titulo-6{ font-weight:800; text-decoration:underline; margin:6mm 0 3mm }
-  .garantia p{ margin:0 0 8px }
-
-  .page-7{ padding:0 0 40mm 0 }
-  .sec-titulo-7{ font-weight:800; text-decoration:underline; margin:6mm 0 3mm }
-  .guia p{ margin:0 0 6px }
-  .guia ul{ margin:4px 0 10px 18px }
-
-  .page-8{ padding:0 0 40mm 0 }
-  .sec-titulo-8{ font-weight:800; text-decoration:underline; margin:6mm 0 3mm }
-  .srv h3{ margin:6mm 0 3mm }
-  .srv ul{ margin:2mm 0 8mm 18px }
+  .tbl5 tr{ break-inside:avoid; page-break-inside:avoid }
 
   .no-print{ display:flex; justify-content:center; gap:8px; padding:12px 0 24px }
   .btn{ padding:10px 14px; border-radius:10px; border:1px solid #cfd7ff; background:#44507c; color:#fff; cursor:pointer }
 
-  .frete-pop{ position:fixed; inset:0; background:rgba(18,24,40,.6); display:grid; place-items:center; z-index:9999 }
-  .frete-pop[hidden]{ display:none }
-  .frete-pop__box{ width:min(420px, 92vw); background:#fff; border:1px solid #cfd7ff; border-radius:12px; padding:16px; box-shadow:0 10px 40px rgba(0,0,0,.35); color:#0e1222 }
-  .frete-pop__box h3{ margin:0 0 6px }
-  .frete-pop__box p{ margin:0 0 12px; line-height:1.4 }
-  @media print{ .frete-pop{ display:none !important } }
+  /* Páginas automáticas */
+  .page-auto{ width:210mm; height:297mm; margin:20px auto; background:#fff; position:relative; box-sizing:border-box; border:none; box-shadow:0 8px 24px rgba(0,0,0,.08); }
+  .page-auto .auto-body{ padding:0 0 40mm 0 }
+  @media print{ .page-auto{ width: calc(210mm - 25.4mm); height:297mm; margin:0 auto; box-shadow:none; } }
 
-  .popup{ position:fixed; inset:0; background:rgba(18,24,40,.6); display:grid; place-items:center; z-index:9999 }
-  .popup[hidden]{ display:none }
-  .popup__box{ width:min(420px, 92vw); background:#fff; border:1px solid #cfd7ff; border-radius:12px; padding:16px; box-shadow:0 10px 40px rgba(0,0,0,.35); color:#0e1222 }
-  .popup__box h3{ margin:0 0 6px }
-  .popup__box p{ margin:0 0 12px; line-height:1.4 }
-  @media print{ .popup{ display:none !important } }
+  /* Ocultar excedente no original (clones não recebem a classe) */
+  .has-auto .hide-when-auto{ display:none !important }
+
+  /* Garantia (pág. 6) – estilo aplicado no original e nas páginas (cont.) */
+  #pagina6 .itemcard, .page-6 .itemcard { display:block !important; border:none !important; margin-bottom:8px; }
+  #pagina6 .itemname, .page-6 .itemname { white-space:nowrap; text-align:center; font-weight:800; font-size:14px; margin-bottom:4px; }
+  #pagina6 .writebox, .page-6 .writebox { border:none !important; padding:0 !important; margin:0 auto !important; min-height:auto !important; font-size:13px; line-height:1.5; text-align:center; }
+
+  /* Notas */
+  .note{ font-size:13px; line-height:1.45; margin-top:6mm }
+  .note b{ font-weight:800 }
+  @media print{ .frete-pop,.popup{ display:none !important } }
 </style>
-
 </head>
 <body>
 
@@ -157,7 +138,7 @@
     <div class="sig"><div class="nm">Richard Maturana</div>Engenharia<br>Cel.: 41 9 9652-2237<br>E-mail: richard.m@vibaz.com.br</div>
   </div>
 
-  <footer class="footer"><div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div></footer>
+  <footer class="footer"><div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div><div class="pageno"></div></footer>
 </section>
 
 <!-- Pop-up de CNPJ inválido -->
@@ -223,25 +204,20 @@ document.addEventListener("DOMContentLoaded", function(){
   <div class="head"><img src="prop/cabecalho_prop.png" alt="Cabeçalho (3 logos)"></div>
   <h2 class="sec-titulo">Descrição da necessidade</h2>
 
-  <div class="split-v">
-    <div class="col"><div id="editBox" class="writebox" contenteditable="true"></div></div>
-    <div class="col">
-      <div class="uploadbox">
-        <div class="subttl">Imagens </div>
-        <div id="drop" class="dropzone">
-          <input id="fileInput" type="file" accept="image/*" multiple>
-          <p><button type="button" class="btn pick">Escolher arquivos</button></p>
-          <p>Arraste e solte aqui ou clique para enviar</p>
-          <p style="font-size:12px; margin-top:2mm">Formatos: PNG/JPG • Até 4 imagens</p>
-        </div>
-        <div id="preview" class="preview"></div>
-      </div>
+  <div class="uploadbox">
+    <div class="subttl">Imagens </div>
+    <div id="drop" class="dropzone">
+      <input id="fileInput" type="file" accept="image/*" multiple>
+      <p><button type="button" class="btn pick">Escolher arquivos</button></p>
+      <p>Arraste e solte aqui ou clique para enviar</p>
+      <p style="font-size:12px; margin-top:2mm">Formatos: PNG/JPG • Até 4 imagens</p>
     </div>
+    <div id="preview" class="preview"></div>
   </div>
 
   <footer class="footer">
     <div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div>
-    <div class="pageno">2</div>
+    <div class="pageno"></div>
   </footer>
 </section>
 
@@ -263,16 +239,17 @@ document.addEventListener("DOMContentLoaded", function(){
     <div id="preview3" class="preview"></div>
   </div>
 
-  <div class="important-title">Importante:</div>
-  <p class="important-text">
-    Esta é uma proposta inicial, em caso de intenção de compra por parte do cliente, será iniciado o projeto final,
-    podendo haver alterações de equipamentos e preços a depender das necessidades e especificidades, alterações estas
+  <!-- BLOCO “IMPORTANTE” (voltei conforme seu print) -->
+  <div class="note note3">
+    <b>Importante:</b>
+    Esta é uma proposta inicial; em caso de intenção de compra por parte do cliente, será iniciado o projeto final,
+    podendo haver alterações de equipamentos e preços a depender das necessidades e especificidades — alterações estas
     que estarão passíveis de aprovação do cliente.
-  </p>
+  </div>
 
   <footer class="footer">
     <div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div>
-    <div class="pageno">3</div>
+    <div class="pageno"></div>
   </footer>
 </section>
 
@@ -283,7 +260,7 @@ document.addEventListener("DOMContentLoaded", function(){
   <div id="itensLista" class="itens"></div>
   <footer class="footer">
     <div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div>
-    <div class="pageno">4</div>
+    <div class="pageno"></div>
   </footer>
 </section>
 
@@ -329,7 +306,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
   <footer class="footer">
     <div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div>
-    <div class="pageno">5</div>
+    <div class="pageno"></div>
   </footer>
 </section>
 
@@ -346,7 +323,7 @@ document.addEventListener("DOMContentLoaded", function(){
   </div>
   <footer class="footer">
     <div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div>
-    <div class="pageno">6</div>
+    <div class="pageno"></div>
   </footer>
 </section>
 
@@ -370,7 +347,7 @@ document.addEventListener("DOMContentLoaded", function(){
   </div>
   <footer class="footer">
     <div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div>
-    <div class="pageno">7</div>
+    <div class="pageno"></div>
   </footer>
 </section>
 
@@ -396,7 +373,7 @@ document.addEventListener("DOMContentLoaded", function(){
   </div>
   <footer class="footer">
     <div class="rodapeimg"><img src="prop/rodape_prop.png" alt="Rodapé da proposta"></div>
-    <div class="pageno">8</div>
+    <div class="pageno"></div>
   </footer>
 </section>
 
@@ -410,7 +387,7 @@ document.addEventListener("DOMContentLoaded", function(){
   </div>
 </div>
 
-<!-- ====== NOVOS POPUPS: senha (mascarada) e edição da forma de pagamento ====== -->
+<!-- ====== POPUPS (senha + editor de forma de pagamento) ====== -->
 <div id="pwdPop" class="popup" hidden>
   <div class="popup__box">
     <h3>Digite a senha para alteração da forma de pagamento</h3>
@@ -449,299 +426,341 @@ function updateDocTitle(){
   const el=document.getElementById('dataHoje');
   if(el){ el.textContent = `${dias[hoje.getDay()]}, ${String(hoje.getDate()).padStart(2,'0')} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()} • Certificado ISO 9001:2015`; }
 })();
-/* Editáveis + título auto */
+/* Título auto */
 (function(){
-  ['editBox','editBox3'].forEach(id=>{
-    const box=document.getElementById(id); if(!box) return;
-    box.innerHTML=''; box.addEventListener('input',()=>{ if(box.textContent.trim()===''){ box.innerHTML=''; } });
-  });
   const orc = document.getElementById('cliOrc');
   if(orc){ updateDocTitle(); orc.addEventListener('input', updateDocTitle); }
   window.addEventListener('beforeprint', updateDocTitle);
 })();
-/* Uploads pág.2 */
+</script>
+
+<!-- Uploads págs. 2 e 3 -->
+<script>
 (function(){
   const MAX = 4;
   const dz=document.getElementById('drop'), input=document.getElementById('fileInput'), preview=document.getElementById('preview');
   if(!dz||!input||!preview) return; let images=[];
-  const pickBtn = dz.querySelector('.pick');
-  if (pickBtn) pickBtn.addEventListener('click', (e)=>{ e.preventDefault(); input.click(); });
+  dz.querySelector('.pick').addEventListener('click', e=>{ e.preventDefault(); input.click(); });
   function render(){
-    preview.innerHTML=''; if(images.length===0) return;
-    images.forEach((src,idx)=>{ const card=document.createElement('div'); card.className='imgcard';
-      const img=document.createElement('img'); img.src=src; card.appendChild(img);
-      const rm=document.createElement('button'); rm.className='imgremove'; rm.type='button'; rm.textContent='remover';
-      rm.addEventListener('click',()=>{ images.splice(idx,1); render(); });
-      card.appendChild(rm); preview.appendChild(card);});
+    preview.innerHTML=''; images.forEach((src,idx)=>{ const card=document.createElement('div'); card.className='imgcard'; const img=new Image(); img.src=src; card.appendChild(img); const rm=document.createElement('button'); rm.className='imgremove'; rm.textContent='remover'; rm.onclick=()=>{ images.splice(idx,1); render(); document.dispatchEvent(new Event('images-changed')); }; card.appendChild(rm); preview.appendChild(card); }); document.dispatchEvent(new Event('images-changed'));
   }
-  function addFiles(list){
-    const files=Array.from(list).filter(f=>/^image\//.test(f.type));
+  function add(list){
+    const files=[...list].filter(f=>/^image\//.test(f.type));
     const space=MAX-images.length; if(space<=0){ alert(`Máximo de ${MAX} imagens.`); return; }
     files.slice(0,space).forEach(f=>{ const r=new FileReader(); r.onload=e=>{ images.push(e.target.result); render(); }; r.readAsDataURL(f); });
   }
   dz.addEventListener('click',()=>input.click());
-  dz.addEventListener('dragover',e=>{ e.preventDefault(); dz.classList.add('hover'); });
-  dz.addEventListener('dragleave',()=> dz.classList.remove('hover'));
-  dz.addEventListener('drop',e=>{ e.preventDefault(); dz.classList.remove('hover'); addFiles(e.dataTransfer.files); });
-  input.addEventListener('change',()=> addFiles(input.files));
-  render();
+  dz.addEventListener('dragover',e=>{ e.preventDefault(); });
+  dz.addEventListener('drop',e=>{ e.preventDefault(); add(e.dataTransfer.files); });
+  input.addEventListener('change',()=> add(input.files));
 })();
-/* Uploads pág.3 */
 (function(){
   const MAX = 4;
   const dz=document.getElementById('drop3'), input=document.getElementById('fileInput3'), preview=document.getElementById('preview3');
   if(!dz||!input||!preview) return; let images=[];
-  const pickBtn = dz.querySelector('.pick3');
-  if (pickBtn) pickBtn.addEventListener('click', (e)=>{ e.preventDefault(); input.click(); });
+  dz.querySelector('.pick3').addEventListener('click', e=>{ e.preventDefault(); input.click(); });
   function render(){
-    preview.innerHTML=''; if(images.length===0) return;
-    images.forEach((src,idx)=>{ const card=document.createElement('div'); card.className='imgcard';
-      const img=document.createElement('img'); img.src=src; card.appendChild(img);
-      const rm=document.createElement('button'); rm.className='imgremove'; rm.type='button'; rm.textContent='remover';
-      rm.addEventListener('click',()=>{ images.splice(idx,1); render(); });
-      card.appendChild(rm); preview.appendChild(card);});
+    preview.innerHTML=''; images.forEach((src,idx)=>{ const card=document.createElement('div'); card.className='imgcard'; const img=new Image(); img.src=src; card.appendChild(img); const rm=document.createElement('button'); rm.className='imgremove'; rm.textContent='remover'; rm.onclick=()=>{ images.splice(idx,1); render(); document.dispatchEvent(new Event('images-changed')); }; card.appendChild(rm); preview.appendChild(card); }); document.dispatchEvent(new Event('images-changed'));
   }
-  function addFiles(list){
-    const files=Array.from(list).filter(f=>/^image\//.test(f.type));
+  function add(list){
+    const files=[...list].filter(f=>/^image\//.test(f.type));
     const space=MAX-images.length; if(space<=0){ alert(`Máximo de ${MAX} imagens.`); return; }
     files.slice(0,space).forEach(f=>{ const r=new FileReader(); r.onload=e=>{ images.push(e.target.result); render(); }; r.readAsDataURL(f); });
   }
   dz.addEventListener('click',()=>input.click());
-  dz.addEventListener('dragover',e=>{ e.preventDefault(); dz.classList.add('hover'); });
-  dz.addEventListener('dragleave',()=> dz.classList.remove('hover'));
-  dz.addEventListener('drop',e=>{ e.preventDefault(); dz.classList.remove('hover'); addFiles(e.dataTransfer.files); });
-  input.addEventListener('change',()=> addFiles(input.files));
-  render();
+  dz.addEventListener('dragover',e=>{ e.preventDefault(); });
+  dz.addEventListener('drop',e=>{ e.preventDefault(); add(e.dataTransfer.files); });
+  input.addEventListener('change',()=> add(input.files));
 })();
+</script>
 
-/* ===== Helpers imagens (pág.4) ===== */
+<!-- Helpers de imagem + montagem dos cards (pág.4) -->
+<script>
 function candidatesFor(nome){
-  const raw = String(nome||'').trim();
-  const noAcc = raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  const cleaned = noAcc.replace(/[+]/g,'_').replace(/[^\w.\- ]+/g,'_').replace(/_/g,' ').replace(/\s+/g,' ').trim();
-  const u = cleaned.replace(/\s+/g,'_'); const h = cleaned.replace(/\s+/g,'-');
+  const raw=String(nome||'').trim();
+  const noAcc=raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const cleaned=noAcc.replace(/[+]/g,'_').replace(/[^\w.\- ]+/g,'_').replace(/_/g,' ').replace(/\s+/g,' ').trim();
+  const u=cleaned.replace(/\s+/g,'_'), h=cleaned.replace(/\s+/g,'-');
   const bases=[raw,noAcc,cleaned,u,h,raw.toUpperCase(),noAcc.toUpperCase(),cleaned.toUpperCase(),u.toUpperCase(),h.toUpperCase(),raw.toLowerCase(),noAcc.toLowerCase(),cleaned.toLowerCase(),u.toLowerCase(),h.toLowerCase()].filter((v,i,a)=>v&&a.indexOf(v)===i);
   const out=[]; for(const b of bases){ out.push(`imagens/${b}.png`,`imagens/${b}.jpg`,`imagens/${b}.jpeg`); } return out;
 }
-function loadWithFallback(img, list, i=0){ if(!list||!list.length){ img.style.display='none'; return; } if(i>=list.length){ img.style.display='none'; return; } img.onerror=()=>loadWithFallback(img,list,i+1); img.onload=()=>{ img.style.display='block'; }; img.src=list[i]; }
+function loadWithFallback(img,list,i=0){ if(!list||!list.length){ img.style.display='none'; return; } if(i>=list.length){ img.style.display='none'; return; } img.onerror=()=>loadWithFallback(img,list,i+1); img.onload=()=>{ img.style.display='block'; }; img.src=list[i]; }
 
-/* Página 4 – montar cards (usa img_cands e desc_default se existirem) */
 (function(){
   const cont=document.getElementById('itensLista'); if(!cont) return;
   const raw=sessionStorage.getItem('propostaData'); const data=raw?JSON.parse(raw):{}; const itens=Array.isArray(data.itens)?data.itens:[];
-  if(itens.length===0){
-    const empty=document.createElement('div'); empty.className='writebox'; empty.style.borderStyle='dashed';
-    empty.textContent='Nenhum item encontrado.'; cont.appendChild(empty); return;
-  }
-
-  itens.forEach((it)=>{
-    const card=document.createElement('div'); card.className='itemcard';
-
+  if(itens.length===0){ const e=document.createElement('div'); e.className='writebox'; e.style.borderStyle='dashed'; e.textContent='Nenhum item encontrado.'; cont.appendChild(e); return; }
+  itens.forEach((it,idx)=>{
+    const card=document.createElement('div'); card.className='itemcard'; card.setAttribute('data-idx', idx);
     const imgWrap=document.createElement('div'); imgWrap.className='itemimg';
-    const img=document.createElement('img'); img.alt=it?.nome||'Item'; imgWrap.appendChild(img);
-    const list = Array.isArray(it.img_cands) && it.img_cands.length ? it.img_cands : candidatesFor(it?.nome);
-    loadWithFallback(img, list);
-
+    const img=new Image(); img.alt=it?.nome||'Item'; imgWrap.appendChild(img);
+    const list=Array.isArray(it.img_cands)&&it.img_cands.length?it.img_cands:candidatesFor(it?.nome);
+    loadWithFallback(img,list);
     const info=document.createElement('div');
-    const name=document.createElement('div'); name.className='itemname'; name.textContent = it?.nome || 'Item sem nome';
-    info.appendChild(name);
-
-    const desc = document.createElement('div');
-    desc.className = 'writebox desc4';
-    desc.setAttribute('contenteditable','true');
-    desc.style.minHeight = '28mm';
-    desc.style.marginTop = '3mm';
-    if (it && typeof it.desc_default === 'string' && it.desc_default.trim().length) {
-      desc.innerHTML = it.desc_default.replace(/\n/g,'<br>');
-    }
-    info.appendChild(desc);
-
-    card.appendChild(imgWrap); card.appendChild(info); cont.appendChild(card);
+    const name=document.createElement('div'); name.className='itemname'; name.textContent=it?.nome||'Item sem nome';
+    const desc=document.createElement('div'); desc.className='writebox desc4'; desc.contentEditable='true'; desc.spellcheck=false;
+    if(it && typeof it.desc_default==='string' && it.desc_default.trim().length){ desc.innerHTML=it.desc_default.replace(/\n/g,'<br>'); }
+    info.append(name,desc); card.append(imgWrap,info); cont.appendChild(card);
   });
 })();
+</script>
 
-/* Página 6 – sincroniza conteúdo da pág.4 */
-(function(){
-  const lista6 = document.getElementById('descPag6Lista');
-  if(!lista6) return;
-
-  function syncFromPage4(){
-    lista6.innerHTML = '';
-    document.querySelectorAll('#pagina4 .itemcard').forEach((card)=>{
-      const info = card.children && card.children[1];
-      if(!info) return;
-      const title = info.querySelector('.itemname')?.textContent || 'Item sem nome';
-      const desc  = info.querySelector('.desc4')?.innerHTML || '&nbsp;';
-
-      const card6 = document.createElement('div'); card6.className = 'itemcard';
-      const box = document.createElement('div'); box.style.display='flex'; box.style.flexDirection='column';
-
-      const name = document.createElement('div'); name.className='itemname'; name.textContent = title;
-      const descBox = document.createElement('div'); descBox.className='writebox'; descBox.innerHTML = desc;
-
-      box.appendChild(name); box.appendChild(descBox);
-      card6.appendChild(box); lista6.appendChild(card6);
-    });
-  }
-  const cont4 = document.getElementById('itensLista');
-  if(cont4){
-    const mo = new MutationObserver(()=>syncFromPage4());
-    mo.observe(cont4, { childList:true, subtree:true });
-  }
-  document.addEventListener('input', (e)=>{ if(e.target && e.target.classList && e.target.classList.contains('desc4')){ syncFromPage4(); } });
-  syncFromPage4();
-})();
-
-/* Página 5 – Itens e investimento (com failsafe para célula) */
+<!-- Página 5 — cálculos -->
+<script>
 (function(){
   const raw=sessionStorage.getItem('propostaData'); const data=raw?JSON.parse(raw):{};
-  const uf = String(data.uf||'PR').toUpperCase();
-  const itens = Array.isArray(data.itens)?data.itens:[];
+  const uf=String(data.uf||'PR').toUpperCase();
+  const itens=Array.isArray(data.itens)?data.itens:[];
   const tbody=document.getElementById('tbody5'); if(!tbody) return;
 
   let subLiq=0, subImp=0;
   itens.forEach((it,idx)=>{
-    let unitLiq = Number(it.unit_liq)||0;
-    let unitImp = Number(it.unit_imp)||0;
-    const qty = Math.max(1, Number(it.qty)||1);
-
-    // Failsafe: se for célula e unit_imp == unit_liq, recalcula aqui
-    if ((it.nome||'').toLowerCase() === 'célula de segurança' && Math.abs(unitImp - unitLiq) < 0.01) {
-      const IMPOSTO_MULT = (uf === 'PR') ? 1.12245 : 1.0765;
-      unitImp = +(unitLiq * IMPOSTO_MULT).toFixed(2);
+    let unitLiq=+it.unit_liq||0, unitImp=+it.unit_imp||0, qty=Math.max(1,+it.qty||1);
+    if((it.nome||'').toLowerCase()==='célula de segurança' && Math.abs(unitImp-unitLiq)<0.01){
+      unitImp=+(unitLiq*((uf==='PR')?1.12245:1.0765)).toFixed(2);
     }
-
-    const freteLiq = idx===0 ? Number(it.frete_liq||0) : 0;
-    const freteImp = idx===0 ? Number(it.frete_imp||0) : 0;
-
-    subLiq += unitLiq*qty + freteLiq;
-    subImp += unitImp*qty + freteImp;
-
-    const tr=document.createElement('tr');
-    tr.innerHTML = `
-      <td>${it.nome||'-'}</td>
-      <td class="right">${qty}</td>
-      <td class="right">${money(unitLiq)}</td>
-      <td class="right">${money(unitImp)}</td>`;
+    const freteLiq=idx===0? +it.frete_liq||0 : 0, freteImp=idx===0? +it.frete_imp||0 : 0;
+    subLiq+=unitLiq*qty+freteLiq; subImp+=unitImp*qty+freteImp;
+    const tr=document.createElement('tr'); tr.innerHTML=`<td>${it.nome||'-'}</td><td class="right">${qty}</td><td class="right">${money(unitLiq)}</td><td class="right">${money(unitImp)}</td>`;
     tbody.appendChild(tr);
   });
+  document.getElementById('subLiq5').textContent='Subtotal valor líquido   '+money(subLiq);
+  document.getElementById('subImp5').textContent='Subtotal valor c/ impostos   '+money(subImp);
+  document.getElementById('totGeral5').textContent='Total geral   '+money(subImp);
 
-  document.getElementById('subLiq5').textContent = 'Subtotal valor líquido   ' + money(subLiq);
-  document.getElementById('subImp5').textContent = 'Subtotal valor c/ impostos   ' + money(subImp);
-  document.getElementById('totGeral5').textContent= 'Total geral   ' + money(subImp);
-
-  const imp = document.getElementById('imp5');
-  imp.textContent = (uf==='PR')
+  const imp=document.getElementById('imp5');
+  imp.textContent=(uf==='PR')
     ? 'NCM: 85159000 – IPI 0%. PIS 0,65% / COFINS 3%. ICMS – 8,0% (vendas dentro do estado do PR).'
     : 'NCM: 85159000 – IPI 0%. PIS 0,65% / COFINS 3%. ICMS – 4,0% (vendas fora do estado do PR).';
 
-  const validadeEl = document.getElementById('validadeData');
-  if (validadeEl) {
-    const base = data && data.data ? new Date(data.data) : new Date();
-    const ate = new Date(base); ate.setDate(base.getDate() + 7);
-    validadeEl.textContent = ate.toLocaleDateString('pt-BR');
-  }
+  const vd=document.getElementById('validadeData');
+  if(vd){ const base=data?.data?new Date(data.data):new Date(); const ate=new Date(base); ate.setDate(base.getDate()+7); vd.textContent=ate.toLocaleDateString('pt-BR'); }
 })();
+</script>
 
-/* Pop-up de frete embutido (se km > 0) */
+<!-- Frete (popup) -->
+<script>
 (function(){
   const raw=sessionStorage.getItem('propostaData'); const data=raw?JSON.parse(raw):{};
-  const km = Number(data.km||0);
-  const itens = Array.isArray(data.itens)?data.itens:[];
-  if(!km || !itens.length) return;
-
-  const frete = Number(itens[0]?.frete_liq || 0);
-  if(!frete) return;
-
-  const pop=document.getElementById('fretePop');
-  const v=document.getElementById('freteValor');
-  const k=document.getElementById('freteKM');
-  const ok=document.getElementById('freteOk');
-
-  v.textContent = money(frete);
-  k.textContent = km.toLocaleString('pt-BR');
-  pop.hidden = false;
-
-  ok.addEventListener('click', ()=> pop.hidden = true);
-  pop.addEventListener('click', e=>{ if(e.target===pop) pop.hidden=true; });
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape') pop.hidden=true; });
+  const km=+data.km||0, itens=Array.isArray(data.itens)?data.itens:[];
+  if(!km||!itens.length) return;
+  const frete=+(itens[0]?.frete_liq||0); if(!frete) return;
+  const pop=document.getElementById('fretePop'), v=document.getElementById('freteValor'), k=document.getElementById('freteKM'), ok=document.getElementById('freteOk');
+  v.textContent=money(frete); k.textContent=km.toLocaleString('pt-BR'); pop.hidden=false;
+  ok.addEventListener('click',()=>pop.hidden=true); pop.addEventListener('click',e=>{ if(e.target===pop) pop.hidden=true; });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') pop.hidden=true; });
 })();
+</script>
 
-/* Botão imprimir garantindo o título atualizado */
+<!-- Senha + editor forma de pagamento -->
+<script>
 (function(){
-  const btn=document.getElementById('btnPrintAll');
-  if(btn){ btn.addEventListener('click', ()=>{ updateDocTitle(); setTimeout(()=>window.print(), 10); }); }
-})();
-window.addEventListener('beforeprint', updateDocTitle);
-
-/* === Senha mascarada + editor de forma de pagamento (sessão) === */
-(function(){
-  const BTN_ID = 'btnMudarPagamento';
-  const SPAN_ID = 'formaPagamentoSpan';
-  const PASSWORD = '121419';
-  const DEFAULT_TEXT = 'a negociar no fechamento do pedido.';
-
-  const btn = document.getElementById(BTN_ID);
-  const span = document.getElementById(SPAN_ID);
-
-  const pwdPop = document.getElementById('pwdPop');
-  const pwdInput = document.getElementById('pwdInput');
-  const pwdErr = document.getElementById('pwdErr');
-  const pwdOk = document.getElementById('pwdOk');
-  const pwdCancel = document.getElementById('pwdCancel');
-
-  const editPop = document.getElementById('fpEditPop');
-  const editText = document.getElementById('fpEditText');
-  const editOk = document.getElementById('fpOk');
-  const editCancel = document.getElementById('fpCancel');
-  const editReset = document.getElementById('fpReset');
-
+  const PASSWORD='121419', DEFAULT_TEXT='a negociar no fechamento do pedido.';
+  const btn=document.getElementById('btnMudarPagamento'), span=document.getElementById('formaPagamentoSpan');
+  const pwdPop=document.getElementById('pwdPop'), pwdInput=document.getElementById('pwdInput'), pwdErr=document.getElementById('pwdErr'), pwdOk=document.getElementById('pwdOk'), pwdCancel=document.getElementById('pwdCancel');
+  const editPop=document.getElementById('fpEditPop'), editText=document.getElementById('fpEditText'), editOk=document.getElementById('fpOk'), editCancel=document.getElementById('fpCancel'), editReset=document.getElementById('fpReset');
+  if(!btn||!span) return;
   function open(el){ el.hidden=false; setTimeout(()=>el.querySelector('input,textarea,button')?.focus(),0); }
   function close(el){ el.hidden=true; }
 
-  if(!btn || !span) return;
+  btn.addEventListener('click',()=>{ pwdErr.style.display='none'; pwdInput.value=''; open(pwdPop); });
+  function submitPwd(){ if((pwdInput.value||'').trim()===PASSWORD){ close(pwdPop); editText.value=span.textContent.trim(); open(editPop); } else { pwdErr.style.display='block'; pwdInput.select(); } }
+  pwdOk.addEventListener('click',submitPwd); pwdInput.addEventListener('keydown',e=>{ if(e.key==='Enter') submitPwd(); });
+  pwdCancel.addEventListener('click',()=>close(pwdPop)); pwdPop.addEventListener('click',e=>{ if(e.target===pwdPop) close(pwdPop); });
+  editCancel.addEventListener('click',()=>close(editPop)); editPop.addEventListener('click',e=>{ if(e.target===editPop) close(editPop); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(!pwdPop.hidden) close(pwdPop); if(!editPop.hidden) close(editPop); }});
+  editOk.addEventListener('click',()=>{ const txt=(editText.value||'').trim(); span.textContent=txt?txt:DEFAULT_TEXT; close(editPop); });
+  editReset.addEventListener('click',()=>{ editText.value=DEFAULT_TEXT; editText.focus(); });
+})();
+</script>
 
-  // Abrir modal de senha
-  btn.addEventListener('click', ()=>{
-    pwdErr.style.display='none';
-    pwdInput.value='';
-    open(pwdPop);
-  });
+<!-- ==================== AUTO PAGINAÇÃO + AJUSTE DINÂMICO DAS IMAGENS ==================== -->
+<script>
+(function(){
+  let isRebuilding=false, isEditing=false, t=null;
 
-  // Submeter senha
-  function submitPwd(){
-    if((pwdInput.value||'').trim() === PASSWORD){
-      close(pwdPop);
-      editText.value = span.textContent.trim();
-      open(editPop);
-    }else{
-      pwdErr.style.display='block';
-      pwdInput.select();
+  function removeAutoPages(){
+    document.querySelectorAll('.page-auto').forEach(p=>p.remove());
+    document.body.classList.remove('has-auto');
+    document.querySelectorAll('.hide-when-auto').forEach(el=>el.classList.remove('hide-when-auto'));
+  }
+  function createAutoAfter(originalPage, titleText, titleClass){
+    const page=document.createElement('section');
+    page.className=`${originalPage.className} page-auto`;
+    const head=originalPage.querySelector('.head')?.outerHTML||'';
+    const rod =originalPage.querySelector('.rodapeimg')?.outerHTML||'';
+    page.innerHTML=head+(titleText?`<h2 class="${titleClass||'sec-titulo'}">${titleText}</h2>`:'')+
+      `<div class="auto-body"></div>`+
+      `<footer class="footer">${rod}<div class="pageno"></div></footer>`;
+    let anchor=originalPage;
+    while(anchor.nextElementSibling && anchor.nextElementSibling.classList.contains('page-auto')) anchor=anchor.nextElementSibling;
+    anchor.after(page);
+    return page.querySelector('.auto-body');
+  }
+  function paginateByCount(originalPageSel, containerSel, title, titleClass, perPage, wrapClass, onClone){
+    const page=document.querySelector(originalPageSel);
+    const cont=document.querySelector(containerSel);
+    if(!page||!cont) return;
+    const items=[...cont.children].filter(n=>n.nodeType===1);
+    items.forEach((el,idx)=> el.setAttribute('data-idx', idx));
+
+    if(items.length<=perPage) return;
+
+    document.body.classList.add('has-auto');
+    items.forEach((el,idx)=>{ if(idx>=perPage) el.classList.add('hide-when-auto'); });
+
+    for(let i=perPage;i<items.length;i+=perPage){
+      const group=items.slice(i,i+perPage).map(n=>{
+        const c=n.cloneNode(true);
+        c.classList.remove('hide-when-auto');
+        c.querySelectorAll?.('.hide-when-auto').forEach(x=>x.classList.remove('hide-when-auto'));
+        if(typeof onClone==='function') onClone(c,n);
+        return c;
+      });
+      if(!group.length) continue;
+      /* títulos SEM “(cont.)” */
+      const body=createAutoAfter(page, title, titleClass);
+      const wrap=document.createElement('div');
+      wrap.className=wrapClass || cont.className || '';
+      group.forEach(el=>wrap.appendChild(el));
+      body.appendChild(wrap);
     }
   }
-  pwdOk.addEventListener('click', submitPwd);
-  pwdInput.addEventListener('keydown', e=>{ if(e.key==='Enter') submitPwd(); });
+  function paginateTableRows(originalPageSel, tableSel, title, titleClass, rowsPerPage=16){
+    const page=document.querySelector(originalPageSel), tbl=document.querySelector(tableSel);
+    if(!page||!tbl) return;
+    const rows=[...tbl.querySelectorAll('tbody tr')];
+    if(rows.length<=rowsPerPage) return;
 
-  // Cancelamentos/fechamentos
-  pwdCancel.addEventListener('click', ()=>close(pwdPop));
-  pwdPop.addEventListener('click', e=>{ if(e.target===pwdPop) close(pwdPop); });
-  editCancel.addEventListener('click', ()=>close(editPop));
-  editPop.addEventListener('click', e=>{ if(e.target===editPop) close(editPop); });
-  document.addEventListener('keydown', e=>{
-    if(e.key==='Escape'){
-      if(!pwdPop.hidden) close(pwdPop);
-      if(!editPop.hidden) close(editPop);
+    document.body.classList.add('has-auto');
+    rows.forEach((r,i)=>{ if(i>=rowsPerPage) r.classList.add('hide-when-auto'); });
+
+    const thead=tbl.querySelector('thead')?.outerHTML||'', tfoot=tbl.querySelector('tfoot')?.outerHTML||'';
+    for(let i=rowsPerPage;i<rows.length;i+=rowsPerPage){
+      const group=rows.slice(i,i+rowsPerPage).map(r=>{ const c=r.cloneNode(true); c.classList.remove('hide-when-auto'); return c; });
+      if(!group.length) continue;
+      const body=createAutoAfter(page, title, titleClass);
+      const t=document.createElement('table'); t.className='tbl5'; t.innerHTML=thead+'<tbody></tbody>';
+      const tb=t.querySelector('tbody'); group.forEach(r=>tb.appendChild(r));
+      if(i+rowsPerPage>=rows.length) t.insertAdjacentHTML('beforeend', tfoot);
+      body.appendChild(t);
+    }
+  }
+  function renumber(){
+    const all=[...document.querySelectorAll('.page, .page-auto')];
+    const total=all.length;
+    all.forEach((p,i)=>{ const spot=p.querySelector('.pageno'); if(spot) spot.textContent=`Página ${i+1} de ${total}`; });
+  }
+
+  /* ==== AJUSTE DINÂMICO DAS IMAGENS (págs. 2 e 3, incluindo clones) ==== */
+  function resizeAllPreviews(){
+    document.querySelectorAll('.page-2 .preview, .page-3 .preview').forEach(preview=>{
+      const page = preview.closest('.page');
+      if(!page) return;
+      const cards = preview.querySelectorAll('.imgcard');
+      const n = cards.length;
+      if(!n) return;
+
+      const rectPage = page.getBoundingClientRect();
+      const rectPrev = preview.getBoundingClientRect();
+      const pb = parseFloat(getComputedStyle(page).paddingBottom)||0;
+      const gap = parseFloat(getComputedStyle(preview).gap)||0;
+
+      /* altura de blocos abaixo do preview (nota só na página 3 original) */
+      let belowH = 0;
+      const note = page.querySelector('.note3');
+      if(note) belowH = note.getBoundingClientRect().height;
+
+      const usedAbove = rectPrev.top - rectPage.top;
+      const available = page.clientHeight - pb - usedAbove - belowH - 12; /* margem de segurança */
+
+      const cols = 2;
+      const rows = Math.ceil(n/cols);
+      const per = Math.max(60, (available - gap*(rows-1))/rows); /* px mínimos por card */
+
+      cards.forEach(c => c.style.height = per + 'px');
+    });
+  }
+
+  function buildGuaranteeFromDescription(){
+    const target=document.getElementById('descPag6Lista'); if(!target) return;
+    target.innerHTML='';
+    const nodes=[...document.querySelectorAll('#pagina4 #itensLista > .itemcard')];
+    nodes.forEach(card=>{
+      const title=card.querySelector('.itemname')?.textContent || 'Item sem nome';
+      const desc =card.querySelector('.desc4')?.innerHTML || '&nbsp;';
+      const wrap=document.createElement('div'); wrap.className='itemcard';
+      const inner=document.createElement('div'); inner.style.display='flex'; inner.style.flexDirection='column';
+      const name=document.createElement('div'); name.className='itemname'; name.textContent=title;
+      const box =document.createElement('div'); box.className='writebox'; box.innerHTML=desc;
+      inner.append(name,box); wrap.appendChild(inner); target.appendChild(wrap);
+    });
+  }
+
+  function schedule(){ clearTimeout(t); t=setTimeout(build,250); }
+  function build(){
+    if(isEditing) return;
+    isRebuilding=true;
+    removeAutoPages();
+
+    paginateByCount('#pagina4','#itensLista','Descrição','sec-titulo-4',3,'itens auto-desc',(clone,source)=>{
+      const idx=source.getAttribute('data-idx');
+      const d=clone.querySelector('.desc4');
+      if(d){ d.setAttribute('data-src-idx', idx); d.contentEditable='true'; d.spellcheck=false; }
+    });
+
+    buildGuaranteeFromDescription();
+    paginateByCount('#pagina6','#descPag6Lista','Qualidade Assegurada versus Garantia','sec-titulo-6',3,'itens auto-garantia');
+
+    paginateByCount('#pagina2','#preview','Descrição da necessidade — imagens','sec-titulo',4,'preview');
+    paginateByCount('#pagina3','#preview3','Solução proposta — imagens','sec-titulo',4,'preview');
+
+    paginateTableRows('#pagina5','#tbl5','Itens e investimento','sec-titulo-5',16);
+
+    renumber();
+    resizeAllPreviews(); /* garante que as imagens caibam na A4 */
+
+    isRebuilding=false;
+  }
+
+  ['#itensLista','#preview','#preview3','#tbody5','#descPag6Lista'].forEach(sel=>{
+    const el=document.querySelector(sel); if(!el) return;
+    new MutationObserver(()=>{ if(!isRebuilding && !isEditing) schedule(); }).observe(el,{childList:true,subtree:false});
+  });
+
+  document.addEventListener('focusin', e=>{
+    if(e.target && e.target.classList && e.target.classList.contains('desc4')) isEditing=true;
+  });
+  document.addEventListener('input', e=>{
+    const t=e.target;
+    if(isRebuilding) return;
+    if(t && t.classList && t.classList.contains('desc4')){
+      const idx=t.getAttribute('data-src-idx');
+      if(idx!=null){
+        const orig=document.querySelector(`#itensLista > .itemcard[data-idx="${idx}"] .desc4`);
+        if(orig) orig.innerHTML=t.innerHTML;
+      }
     }
   });
-
-  // Editor
-  editOk.addEventListener('click', ()=>{
-    const txt = (editText.value||'').trim();
-    span.textContent = txt ? txt : DEFAULT_TEXT;
-    close(editPop);
+  document.addEventListener('focusout', e=>{
+    if(e.target && e.target.classList && e.target.classList.contains('desc4')){
+      isEditing=false; schedule();
+    }
   });
-  editReset.addEventListener('click', ()=>{ editText.value = DEFAULT_TEXT; editText.focus(); });
+  document.addEventListener('keydown', e=>{
+    if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='s'){ e.preventDefault(); if(!isEditing) build(); }
+  });
+
+  window.addEventListener('load', ()=>{ build(); resizeAllPreviews(); });
+  window.addEventListener('beforeprint', ()=>{ if(!isEditing){ build(); resizeAllPreviews(); } });
+  window.addEventListener('resize', ()=>{ if(!isEditing) resizeAllPreviews(); });
+  document.addEventListener('images-changed', ()=>{ if(!isEditing && !isRebuilding){ schedule(); /* build chamará resizeAllPreviews */ } });
 })();
+</script>
+
+<script>
+/* Botão imprimir garante título atualizado */
+document.getElementById('btnPrintAll')?.addEventListener('click', ()=>{ updateDocTitle(); setTimeout(()=>window.print(), 10); });
 </script>
 </body>
 </html>
