@@ -270,17 +270,18 @@
       <table class="tbl">
         <thead>
           <tr>
-            <th style="width:58%">Produto</th>
+            <th style="width:50%">Produto</th>
             <th style="width:8%">Qtd</th>
-            <th class="right" style="width:17%">Total líquido</th>
-            <th class="right" style="width:17%">Total c/ impostos</th>
+            <th class="right" style="width:14%">Total líquido</th>
+            <th class="right" style="width:14%">Total c/ impostos</th>
+            <th style="width:14%">Ações</th>
           </tr>
         </thead>
         <tbody id="cartTbody"></tbody>
         <tfoot>
-          <tr><td colspan="4" class="right" id="cartSubLiq">Subtotal valor líquido</td></tr>
-          <tr><td colspan="4" class="right" id="cartSubImp">Subtotal valor c/ impostos</td></tr>
-          <tr><td colspan="4" class="right" id="cartTotGeral">Total geral</td></tr>
+          <tr><td colspan="5" class="right" id="cartSubLiq">Subtotal valor líquido</td></tr>
+          <tr><td colspan="5" class="right" id="cartSubImp">Subtotal valor c/ impostos</td></tr>
+          <tr><td colspan="5" class="right" id="cartTotGeral">Total geral</td></tr>
         </tfoot>
       </table>
     </div>
@@ -438,17 +439,47 @@ function buildCart(){
     cartSelGrid.innerHTML='<div style="grid-column:1/-1;padding:10px;background:#fff;border:1px dashed #a3b0ff;border-radius:10px;text-align:center">Nenhum item no carrinho.</div>';
     return;
   }
+
+  // Função auxiliar para remover e re-renderizar
+  function removeItem(target){
+    target.incluir = 0;
+    target.qty = 1;
+    renderCards();
+    updateCartBadge();
+    buildCart();
+  }
+
   itensSel.forEach((it, idx)=>{
     const totalLiq = (it.ad * it.qty) + (idx===0 ? custo : 0);
     const totalImp = (it.an * it.qty) + (idx===0 ? custo : 0);
+
+    // CARD VISUAL COM REMOVER
     const box=document.createElement('div'); box.className='sel-item';
-    box.innerHTML=`<div class="imgbox"><img alt="${it.nome}"></div><div class="info"><h4>${it.nome}</h4><div class="row"><div>Total Líq.: <b>${money(totalLiq)}</b></div><div>Total c/ Imp.: <b>${money(totalImp)}</b></div></div><div>Qtd: <b>${it.qty}</b></div></div>`;
+    box.innerHTML=`
+      <div class="imgbox"><img alt="${it.nome}"></div>
+      <div class="info">
+        <h4>${it.nome}</h4>
+        <div class="row"><div>Total Líq.: <b>${money(totalLiq)}</b></div><div>Total c/ Imp.: <b>${money(totalImp)}</b></div></div>
+        <div>Qtd: <b>${it.qty}</b></div>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center">
+        <button class="btn danger" style="padding:6px 10px;font-size:12px">Remover</button>
+      </div>`;
     const img=box.querySelector('img');
     if (it.img_custom) img.src = it.img_custom; else loadImageWithFallback(img,candidatesFor(it.nome));
+    // evento do botão remover (card)
+    box.querySelector('.btn.danger').addEventListener('click', () => removeItem(it));
     cartSelGrid.appendChild(box);
 
+    // LINHA DA TABELA COM COLUNA "AÇÕES"
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${it.nome}</td><td class="right">${it.qty}</td><td class="right">${money(totalLiq)}</td><td class="right">${money(totalImp)}</td>`;
+    tr.innerHTML=`
+      <td>${it.nome}</td>
+      <td class="right">${it.qty}</td>
+      <td class="right">${money(totalLiq)}</td>
+      <td class="right">${money(totalImp)}</td>
+      <td><button class="btn danger" style="padding:6px 10px;font-size:12px">Remover</button></td>`;
+    tr.querySelector('.btn.danger').addEventListener('click', () => removeItem(it));
     cartTbody.appendChild(tr);
   });
 
