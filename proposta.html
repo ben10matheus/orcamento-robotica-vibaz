@@ -49,7 +49,8 @@
   .sec-titulo,.sec-titulo-4,.sec-titulo-5,.sec-titulo-6,.sec-titulo-7,.sec-titulo-8{ font-weight:800; text-decoration:underline; margin:6mm 0 3mm }
 
   .writebox{ border:1px solid var(--frame); border-radius:10px; padding:5mm; margin:0; flex:1 1 auto; min-height:0; line-height:1.6; outline:none; }
-  .writebox:empty:before{ content:""; color:#9aa3c7 }
+  /* placeholder opcional via data-ph */
+  .writebox:empty:before{ content: attr(data-ph); color:#9aa3c7 }
 
   /* Uploads (págs. 2 e 3) */
   .subttl{ font-weight:800; margin:0 0 2mm; font-size:14px }
@@ -96,7 +97,7 @@
   #pagina6 .itemname, .page-6 .itemname { white-space:nowrap; text-align:center; font-weight:800; font-size:14px; margin-bottom:4px; }
   #pagina6 .writebox, .page-6 .writebox { border:none !important; padding:0 !important; margin:0 auto !important; min-height:auto !important; font-size:13px; line-height:1.5; text-align:center; }
 
-  /* Notas */
+  /* Notas (pág. 3) */
   .note{ font-size:13px; line-height:1.45; margin-top:6mm }
   .note b{ font-weight:800 }
   @media print{ .frete-pop,.popup{ display:none !important } }
@@ -204,7 +205,11 @@ document.addEventListener("DOMContentLoaded", function(){
   <div class="head"><img src="prop/cabecalho_prop.png" alt="Cabeçalho (3 logos)"></div>
   <h2 class="sec-titulo">Descrição da necessidade</h2>
 
-  <div class="uploadbox">
+  <!-- Campo de texto da página 2 -->
+  <div id="editBox2" class="writebox" contenteditable="true"
+       data-ph="Descreva aqui a necessidade (opcional)..."></div>
+
+  <div class="uploadbox" style="margin-top:6mm">
     <div class="subttl">Imagens </div>
     <div id="drop" class="dropzone">
       <input id="fileInput" type="file" accept="image/*" multiple>
@@ -226,7 +231,8 @@ document.addEventListener("DOMContentLoaded", function(){
   <div class="head"><img src="prop/cabecalho_prop.png" alt="Cabeçalho (3 logos)"></div>
   <h2 class="sec-titulo">Solução proposta</h2>
 
-  <div id="editBox3" class="writebox" contenteditable="true"></div>
+  <div id="editBox3" class="writebox" contenteditable="true"
+       data-ph="Explique a solução proposta..."></div>
 
   <div class="uploadbox" style="margin-top:6mm">
     <div class="subttl">Imagens </div>
@@ -239,7 +245,6 @@ document.addEventListener("DOMContentLoaded", function(){
     <div id="preview3" class="preview"></div>
   </div>
 
-  <!-- BLOCO “IMPORTANTE” (voltei conforme seu print) -->
   <div class="note note3">
     <b>Importante:</b>
     Esta é uma proposta inicial; em caso de intenção de compra por parte do cliente, será iniciado o projeto final,
@@ -442,30 +447,51 @@ function updateDocTitle(){
   if(!dz||!input||!preview) return; let images=[];
   dz.querySelector('.pick').addEventListener('click', e=>{ e.preventDefault(); input.click(); });
   function render(){
-    preview.innerHTML=''; images.forEach((src,idx)=>{ const card=document.createElement('div'); card.className='imgcard'; const img=new Image(); img.src=src; card.appendChild(img); const rm=document.createElement('button'); rm.className='imgremove'; rm.textContent='remover'; rm.onclick=()=>{ images.splice(idx,1); render(); document.dispatchEvent(new Event('images-changed')); }; card.appendChild(rm); preview.appendChild(card); }); document.dispatchEvent(new Event('images-changed'));
+    preview.innerHTML='';
+    images.forEach((src,idx)=>{
+      const card=document.createElement('div'); card.className='imgcard';
+      const img=new Image(); img.src=src; card.appendChild(img);
+      const rm=document.createElement('button'); rm.className='imgremove'; rm.textContent='remover';
+      rm.onclick=()=>{ images.splice(idx,1); render(); document.dispatchEvent(new Event('images-changed')); };
+      card.appendChild(rm); preview.appendChild(card);
+    });
+    document.dispatchEvent(new Event('images-changed'));
   }
   function add(list){
     const files=[...list].filter(f=>/^image\//.test(f.type));
     const space=MAX-images.length; if(space<=0){ alert(`Máximo de ${MAX} imagens.`); return; }
-    files.slice(0,space).forEach(f=>{ const r=new FileReader(); r.onload=e=>{ images.push(e.target.result); render(); }; r.readAsDataURL(f); });
+    files.slice(0,space).forEach(f=>{
+      const r=new FileReader(); r.onload=e=>{ images.push(e.target.result); render(); }; r.readAsDataURL(f);
+    });
   }
   dz.addEventListener('click',()=>input.click());
   dz.addEventListener('dragover',e=>{ e.preventDefault(); });
   dz.addEventListener('drop',e=>{ e.preventDefault(); add(e.dataTransfer.files); });
   input.addEventListener('change',()=> add(input.files));
 })();
+
 (function(){
   const MAX = 4;
   const dz=document.getElementById('drop3'), input=document.getElementById('fileInput3'), preview=document.getElementById('preview3');
   if(!dz||!input||!preview) return; let images=[];
   dz.querySelector('.pick3').addEventListener('click', e=>{ e.preventDefault(); input.click(); });
   function render(){
-    preview.innerHTML=''; images.forEach((src,idx)=>{ const card=document.createElement('div'); card.className='imgcard'; const img=new Image(); img.src=src; card.appendChild(img); const rm=document.createElement('button'); rm.className='imgremove'; rm.textContent='remover'; rm.onclick=()=>{ images.splice(idx,1); render(); document.dispatchEvent(new Event('images-changed')); }; card.appendChild(rm); preview.appendChild(card); }); document.dispatchEvent(new Event('images-changed'));
+    preview.innerHTML='';
+    images.forEach((src,idx)=>{
+      const card=document.createElement('div'); card.className='imgcard';
+      const img=new Image(); img.src=src; card.appendChild(img);
+      const rm=document.createElement('button'); rm.className='imgremove'; rm.textContent='remover';
+      rm.onclick=()=>{ images.splice(idx,1); render(); document.dispatchEvent(new Event('images-changed')); };
+      card.appendChild(rm); preview.appendChild(card);
+    });
+    document.dispatchEvent(new Event('images-changed'));
   }
   function add(list){
     const files=[...list].filter(f=>/^image\//.test(f.type));
     const space=MAX-images.length; if(space<=0){ alert(`Máximo de ${MAX} imagens.`); return; }
-    files.slice(0,space).forEach(f=>{ const r=new FileReader(); r.onload=e=>{ images.push(e.target.result); render(); }; r.readAsDataURL(f); });
+    files.slice(0,space).forEach(f=>{
+      const r=new FileReader(); r.onload=e=>{ images.push(e.target.result); render(); }; r.readAsDataURL(f);
+    });
   }
   dz.addEventListener('click',()=>input.click());
   dz.addEventListener('dragover',e=>{ e.preventDefault(); });
@@ -484,12 +510,20 @@ function candidatesFor(nome){
   const bases=[raw,noAcc,cleaned,u,h,raw.toUpperCase(),noAcc.toUpperCase(),cleaned.toUpperCase(),u.toUpperCase(),h.toUpperCase(),raw.toLowerCase(),noAcc.toLowerCase(),cleaned.toLowerCase(),u.toLowerCase(),h.toLowerCase()].filter((v,i,a)=>v&&a.indexOf(v)===i);
   const out=[]; for(const b of bases){ out.push(`imagens/${b}.png`,`imagens/${b}.jpg`,`imagens/${b}.jpeg`); } return out;
 }
-function loadWithFallback(img,list,i=0){ if(!list||!list.length){ img.style.display='none'; return; } if(i>=list.length){ img.style.display='none'; return; } img.onerror=()=>loadWithFallback(img,list,i+1); img.onload=()=>{ img.style.display='block'; }; img.src=list[i]; }
+function loadWithFallback(img,list,i=0){
+  if(!list||!list.length){ img.style.display='none'; return; }
+  if(i>=list.length){ img.style.display='none'; return; }
+  img.onerror=()=>loadWithFallback(img,list,i+1);
+  img.onload=()=>{ img.style.display='block'; };
+  img.src=list[i];
+}
 
 (function(){
   const cont=document.getElementById('itensLista'); if(!cont) return;
   const raw=sessionStorage.getItem('propostaData'); const data=raw?JSON.parse(raw):{}; const itens=Array.isArray(data.itens)?data.itens:[];
-  if(itens.length===0){ const e=document.createElement('div'); e.className='writebox'; e.style.borderStyle='dashed'; e.textContent='Nenhum item encontrado.'; cont.appendChild(e); return; }
+  if(itens.length===0){
+    const e=document.createElement('div'); e.className='writebox'; e.style.borderStyle='dashed'; e.textContent='Nenhum item encontrado.'; cont.appendChild(e); return;
+  }
   itens.forEach((it,idx)=>{
     const card=document.createElement('div'); card.className='itemcard'; card.setAttribute('data-idx', idx);
     const imgWrap=document.createElement('div'); imgWrap.className='itemimg';
@@ -618,7 +652,6 @@ function loadWithFallback(img,list,i=0){ if(!list||!list.length){ img.style.disp
         return c;
       });
       if(!group.length) continue;
-      /* títulos SEM “(cont.)” */
       const body=createAutoAfter(page, title, titleClass);
       const wrap=document.createElement('div');
       wrap.className=wrapClass || cont.className || '';
@@ -652,7 +685,7 @@ function loadWithFallback(img,list,i=0){ if(!list||!list.length){ img.style.disp
     all.forEach((p,i)=>{ const spot=p.querySelector('.pageno'); if(spot) spot.textContent=`Página ${i+1} de ${total}`; });
   }
 
-  /* ==== AJUSTE DINÂMICO DAS IMAGENS (págs. 2 e 3, incluindo clones) ==== */
+  /* ==== AJUSTE DINÂMICO DAS IMAGENS (págs. 2 e 3) ==== */
   function resizeAllPreviews(){
     document.querySelectorAll('.page-2 .preview, .page-3 .preview').forEach(preview=>{
       const page = preview.closest('.page');
@@ -672,7 +705,7 @@ function loadWithFallback(img,list,i=0){ if(!list||!list.length){ img.style.disp
       if(note) belowH = note.getBoundingClientRect().height;
 
       const usedAbove = rectPrev.top - rectPage.top;
-      const available = page.clientHeight - pb - usedAbove - belowH - 12; /* margem de segurança */
+      const available = page.clientHeight - pb - usedAbove - belowH - 12; /* margem */
 
       const cols = 2;
       const rows = Math.ceil(n/cols);
@@ -703,31 +736,38 @@ function loadWithFallback(img,list,i=0){ if(!list||!list.length){ img.style.disp
     isRebuilding=true;
     removeAutoPages();
 
+    /* Descrição (pág. 4) – 3 por página */
     paginateByCount('#pagina4','#itensLista','Descrição','sec-titulo-4',3,'itens auto-desc',(clone,source)=>{
       const idx=source.getAttribute('data-idx');
       const d=clone.querySelector('.desc4');
       if(d){ d.setAttribute('data-src-idx', idx); d.contentEditable='true'; d.spellcheck=false; }
     });
 
+    /* Garantia (pág. 6) – espelha descrição e também 3 por página */
     buildGuaranteeFromDescription();
     paginateByCount('#pagina6','#descPag6Lista','Qualidade Assegurada versus Garantia','sec-titulo-6',3,'itens auto-garantia');
 
+    /* Imagens – 4 por página */
     paginateByCount('#pagina2','#preview','Descrição da necessidade — imagens','sec-titulo',4,'preview');
     paginateByCount('#pagina3','#preview3','Solução proposta — imagens','sec-titulo',4,'preview');
 
+    /* Tabela (pág. 5): por linhas */
     paginateTableRows('#pagina5','#tbl5','Itens e investimento','sec-titulo-5',16);
 
+    /* Numeração e ajuste de imagens */
     renumber();
-    resizeAllPreviews(); /* garante que as imagens caibam na A4 */
+    resizeAllPreviews();
 
     isRebuilding=false;
   }
 
+  /* Observadores */
   ['#itensLista','#preview','#preview3','#tbody5','#descPag6Lista'].forEach(sel=>{
     const el=document.querySelector(sel); if(!el) return;
     new MutationObserver(()=>{ if(!isRebuilding && !isEditing) schedule(); }).observe(el,{childList:true,subtree:false});
   });
 
+  /* Edição estável em clones (sincroniza no original) */
   document.addEventListener('focusin', e=>{
     if(e.target && e.target.classList && e.target.classList.contains('desc4')) isEditing=true;
   });
@@ -751,10 +791,14 @@ function loadWithFallback(img,list,i=0){ if(!list||!list.length){ img.style.disp
     if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='s'){ e.preventDefault(); if(!isEditing) build(); }
   });
 
+  /* Recalcular grid de imagens quando digitar nas páginas 2 e 3 */
+  document.getElementById('editBox2')?.addEventListener('input', resizeAllPreviews);
+  document.getElementById('editBox3')?.addEventListener('input', resizeAllPreviews);
+
   window.addEventListener('load', ()=>{ build(); resizeAllPreviews(); });
   window.addEventListener('beforeprint', ()=>{ if(!isEditing){ build(); resizeAllPreviews(); } });
   window.addEventListener('resize', ()=>{ if(!isEditing) resizeAllPreviews(); });
-  document.addEventListener('images-changed', ()=>{ if(!isEditing && !isRebuilding){ schedule(); /* build chamará resizeAllPreviews */ } });
+  document.addEventListener('images-changed', ()=>{ if(!isEditing && !isRebuilding){ schedule(); } });
 })();
 </script>
 
