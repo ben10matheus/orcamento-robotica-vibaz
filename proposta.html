@@ -421,7 +421,18 @@ document.addEventListener("DOMContentLoaded", function(){
 const money = v => isFinite(v) ? v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '-';
 function updateDocTitle(){
   const orc = (document.getElementById('cliOrc')?.value || '').trim();
-  document.title = orc ? `Proposta ${orc} - VIBAZ` : 'Proposta - VIBAZ';
+  function updateDocTitle(){
+  const empresa = (document.getElementById('cliEmpresa')?.value || '').trim().replace(/\s+/g,'_');
+  const orc = (document.getElementById('cliOrc')?.value || '').trim();
+  if(empresa && orc){
+    document.title = `VIBAZ_${empresa}_${orc}`;
+  } else if(orc){
+    document.title = `VIBAZ_${orc}`;
+  } else {
+    document.title = 'VIBAZ_PROPOSTA';
+  }
+}
+
 }
 /* Data pág.1 */
 (function(){
