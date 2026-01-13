@@ -575,8 +575,8 @@ function loadWithFallback(img,list,i=0){
 
   const imp=document.getElementById('imp5');
   imp.textContent=(uf==='PR')
-    ? 'NCM: 85159000 – IPI 0%. PIS 0,65% / COFINS 3%. ICMS – 8,0% (vendas dentro do estado do PR).'
-    : 'NCM: 85159000 – IPI 0%. PIS 0,65% / COFINS 3%. ICMS – 4,0% (vendas fora do estado do PR).';
+    ? 'NCM: 85159000 – IVA 0,1% / ICBS 0,9% / IPI 0%. PIS 0,65% / COFINS 3%. ICMS – 8,0% (vendas dentro do estado do PR).'
+    : 'NCM: 85159000 – IVA 0,1% / ICBS 0,9% / IPI 0%. PIS 0,65% / COFINS 3%. ICMS – 4,0% (vendas fora do estado do PR).';
 
   const vd=document.getElementById('validadeData');
   if(vd){ const base=data?.data?new Date(data.data):new Date(); const ate=new Date(base); ate.setDate(base.getDate()+7); vd.textContent=ate.toLocaleDateString('pt-BR'); }
