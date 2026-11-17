@@ -382,7 +382,12 @@ document.addEventListener("DOMContentLoaded", function(){
   </footer>
 </section>
 
-<div class="no-print" style="margin-top:12px"><button id="btnPrintAll" class="btn">Imprimir proposta</button></div>
+<div class="no-print export-actions" style="margin-top:12px">
+  <button id="btnPrintAll" class="btn" type="button">Imprimir proposta</button>
+  <button id="btnExportPDF" class="btn" type="button">Gerar PDF</button>
+  <button id="btnExportWord" class="btn" type="button">Gerar Word</button>
+  <span id="exportStatus" role="status" aria-live="polite"></span>
+</div>
 
 <div id="fretePop" class="frete-pop no-print" hidden>
   <div class="frete-pop__box">
@@ -420,19 +425,13 @@ document.addEventListener("DOMContentLoaded", function(){
 <script>
 const money = v => isFinite(v) ? v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '-';
 function updateDocTitle(){
-  const orc = (document.getElementById('cliOrc')?.value || '').trim();
-  function updateDocTitle(){
-  const empresa = (document.getElementById('cliEmpresa')?.value || '').trim().replace(/\s+/g,'_');
-  const orc = (document.getElementById('cliOrc')?.value || '').trim();
-  if(empresa && orc){
-    document.title = `VIBAZ_${empresa}_${orc}`;
-  } else if(orc){
-    document.title = `VIBAZ_${orc}`;
-  } else {
-    document.title = 'VIBAZ_PROPOSTA';
-  }
+  document.title = getProposalFileBaseName();
 }
-
+function getProposalFileBaseName(){
+  const clean = value => value.trim().replace(/[\u0000-\u001f\u007f\\/:*?"<>|]/g, '-').replace(/\s+/g, ' ').replace(/[. ]+$/g, '').slice(0, 95).replace(/[. ]+$/g, '');
+  const orc = clean(document.getElementById('cliOrc')?.value || '');
+  const empresa = clean(document.getElementById('cliEmpresa')?.value || '');
+  return [orc, empresa].filter(Boolean).join(' - ') || 'Proposta VIBAZ';
 }
 /* Data pág.1 */
 (function(){
@@ -444,8 +443,8 @@ function updateDocTitle(){
 })();
 /* Título auto */
 (function(){
-  const orc = document.getElementById('cliOrc');
-  if(orc){ updateDocTitle(); orc.addEventListener('input', updateDocTitle); }
+  updateDocTitle();
+  ['cliOrc', 'cliEmpresa'].forEach(id => document.getElementById(id)?.addEventListener('input', updateDocTitle));
   window.addEventListener('beforeprint', updateDocTitle);
 })();
 </script>
@@ -674,20 +673,62 @@ function loadWithFallback(img,list,i=0){
     const page=document.querySelector(originalPageSel), tbl=document.querySelector(tableSel);
     if(!page||!tbl) return;
     const rows=[...tbl.querySelectorAll('tbody tr')];
-    if(rows.length<=rowsPerPage) return;
+    if(!rows.length) return;
+
+    // Measure the complete table before hiding anything: row heights can vary
+    // when a product name wraps, and the commercial conditions also need room.
+    const heights=rows.map(row=>row.getBoundingClientRect().height);
+    const head=tbl.querySelector('thead'), foot=tbl.querySelector('tfoot');
+    const thead=head?.outerHTML||'', tfoot=foot?.outerHTML||'';
+    const headHeight=head?.getBoundingClientRect().height||0;
+    const footHeight=foot?.getBoundingClientRect().height||0;
+    const tableRect=tbl.getBoundingClientRect();
+    const tableFrame=Math.max(2,tableRect.height-headHeight-footHeight-heights.reduce((a,b)=>a+b,0));
+    const footerHeight=page.querySelector('.footer')?.getBoundingClientRect().height||0;
+    const following=[...page.children].filter(node=>
+      node!==tbl && !node.matches('.head,.footer,.no-print') &&
+      (tbl.compareDocumentPosition(node)&Node.DOCUMENT_POSITION_FOLLOWING)
+    );
+    const followingBottom=()=>Math.max(tbl.getBoundingClientRect().bottom,...following.map(node=>node.getBoundingClientRect().bottom));
+    const belowHeight=Math.max(0,followingBottom()-tableRect.bottom);
+    const bottomLimit=target=>target.getBoundingClientRect().bottom-Math.max(footerHeight,target.querySelector('.footer')?.getBoundingClientRect().height||0)-16;
+    const originalBudget=Math.max(0,bottomLimit(page)-tableRect.top-headHeight-footHeight-tableFrame-belowHeight);
+    const limit=Math.min(16,Math.max(1,Math.floor(rowsPerPage)||16));
+    function countFor(start,budget){
+      let count=0, used=0;
+      while(start+count<rows.length && count<limit && used+heights[start+count]<=budget){
+        used+=heights[start+count]; count++;
+      }
+      return count;
+    }
+    let firstCount=countFor(0,originalBudget);
+    if(firstCount===rows.length) return;
 
     document.body.classList.add('has-auto');
-    rows.forEach((r,i)=>{ if(i>=rowsPerPage) r.classList.add('hide-when-auto'); });
+    foot?.classList.add('hide-when-auto');
+    rows.forEach((row,index)=>{ if(index>=firstCount) row.classList.add('hide-when-auto'); });
+    // Recheck after the browser has recalculated column widths for the subset.
+    while(firstCount>0 && followingBottom()>bottomLimit(page)){
+      rows[--firstCount].classList.add('hide-when-auto');
+    }
 
-    const thead=tbl.querySelector('thead')?.outerHTML||'', tfoot=tbl.querySelector('tfoot')?.outerHTML||'';
-    for(let i=rowsPerPage;i<rows.length;i+=rowsPerPage){
-      const group=rows.slice(i,i+rowsPerPage).map(r=>{ const c=r.cloneNode(true); c.classList.remove('hide-when-auto'); return c; });
-      if(!group.length) continue;
+    let offset=firstCount;
+    while(offset<rows.length){
       const body=createAutoAfter(page, title, titleClass);
       const t=document.createElement('table'); t.className='tbl5'; t.innerHTML=thead+'<tbody></tbody>';
-      const tb=t.querySelector('tbody'); group.forEach(r=>tb.appendChild(r));
-      if(i+rowsPerPage>=rows.length) t.insertAdjacentHTML('beforeend', tfoot);
       body.appendChild(t);
+      const budget=Math.max(0,bottomLimit(body.closest('.page'))-t.getBoundingClientRect().top-headHeight-footHeight-tableFrame);
+      let count=Math.max(1,countFor(offset,budget));
+      const tb=t.querySelector('tbody');
+      rows.slice(offset,offset+count).forEach(row=>{
+        const clone=row.cloneNode(true); clone.classList.remove('hide-when-auto'); tb.appendChild(clone);
+      });
+      // Keep a whole row together and reserve totals even on intermediate parts.
+      while(count>1 && t.getBoundingClientRect().bottom+footHeight>bottomLimit(body.closest('.page'))){
+        tb.lastElementChild.remove(); count--;
+      }
+      offset+=count;
+      if(offset===rows.length && tfoot) t.insertAdjacentHTML('beforeend',tfoot);
     }
   }
   function renumber(){
@@ -743,7 +784,7 @@ function loadWithFallback(img,list,i=0){
 
   function schedule(){ clearTimeout(t); t=setTimeout(build,250); }
   function build(){
-    if(isEditing) return;
+    if(isEditing || window.vibazExportInProgress) return;
     isRebuilding=true;
     removeAutoPages();
 
@@ -810,6 +851,12 @@ function loadWithFallback(img,list,i=0){
   window.addEventListener('beforeprint', ()=>{ if(!isEditing){ build(); resizeAllPreviews(); } });
   window.addEventListener('resize', ()=>{ if(!isEditing) resizeAllPreviews(); });
   document.addEventListener('images-changed', ()=>{ if(!isEditing && !isRebuilding){ schedule(); } });
+  window.prepareProposalForExport = function(){
+    clearTimeout(t);
+    isEditing=false;
+    build();
+    resizeAllPreviews();
+  };
 })();
 </script>
 
@@ -817,5 +864,6 @@ function loadWithFallback(img,list,i=0){
 /* Botão imprimir garante título atualizado */
 document.getElementById('btnPrintAll')?.addEventListener('click', ()=>{ updateDocTitle(); setTimeout(()=>window.print(), 10); });
 </script>
+<script src="proposal-export.js"></script>
 </body>
 </html>
