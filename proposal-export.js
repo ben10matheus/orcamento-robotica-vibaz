@@ -7,10 +7,7 @@
 
   const style = document.createElement('style');
   style.textContent = `
-    .export-actions{flex-wrap:wrap;align-items:center}
-    .export-actions .btn:disabled{opacity:.6;cursor:wait}
-    #exportStatus{flex-basis:100%;text-align:center;font-size:13px}
-    #proposal-export-stage{position:absolute;left:-10000px;top:0;width:210mm;background:white;color:#0e1222;pointer-events:none}
+    #proposal-export-stage{position:absolute;left:-10000px;top:0;width:210mm;background:white;color:#0e1222;font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;pointer-events:none}
     #proposal-export-stage .export-page{width:210mm;height:297mm;margin:0;border:0;box-shadow:none;background:white}
     #proposal-export-stage .export-field{display:block;white-space:pre-wrap;overflow-wrap:anywhere;border:0;border-radius:0;padding:7px 9px;background:transparent;min-height:20px;box-sizing:border-box;width:100%}
     #proposal-export-stage [contenteditable]{overflow-wrap:anywhere}
@@ -97,7 +94,10 @@
         onclone: doc => { doc.querySelectorAll('img').forEach(img => { img.loading = 'eager'; }); }
       });
       if (i) pdf.addPage();
-      pdf.addImage(canvas.toDataURL('image/jpeg', .95), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+      // Margem mínima de 12,7 mm; mantém a proporção A4 sem esticar a página.
+      const width = 210 - 2 * 12.7;
+      const height = width * 297 / 210;
+      pdf.addImage(canvas.toDataURL('image/jpeg', .95), 'JPEG', 12.7, (297 - height) / 2, width, height, undefined, 'FAST');
       canvas.width = 0;
       canvas.height = 0;
     }
@@ -121,6 +121,7 @@
     buttons.forEach(button => { button.disabled = true; });
     status.textContent = `Preparando ${format === 'pdf' ? 'PDF' : 'Word'}…`;
     let stage;
+    const scrollPosition = {left:window.scrollX, top:window.scrollY};
     try {
       if (format === 'pdf') {
         await Promise.all([
@@ -135,12 +136,16 @@
       await waitForImages(document.querySelector('body'));
       // Finaliza a paginação antes da captura, incluindo a última edição feita.
       window.vibazExportInProgress = false;
+      document.body.classList.add('proposal-export-layout');
       window.prepareProposalForExport?.();
-      window.vibazExportInProgress = true;
       if (!validateName()) return;
       const filename = getProposalFileBaseName();
       const cloned = clonePages();
       stage = cloned.stage;
+      // Só os clones ficam em A4: o usuário continua vendo o formulário mobile.
+      window.restoreProposalLayout?.();
+      window.vibazExportInProgress = true;
+      window.scrollTo(scrollPosition);
       await waitForImages(stage);
       const blob = format === 'pdf' ? await makePDF(cloned.pages, filename) : await window.VibazWordExport(cloned.pages, filename);
       const extension = format === 'pdf' ? 'pdf' : 'docx';
@@ -152,6 +157,8 @@
     } finally {
       stage?.remove();
       window.vibazExportInProgress = false;
+      window.restoreProposalLayout?.();
+      window.scrollTo(scrollPosition);
       buttons.forEach(button => { button.disabled = false; });
     }
   }

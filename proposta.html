@@ -102,6 +102,7 @@
   .note b{ font-weight:800 }
   @media print{ .frete-pop,.popup{ display:none !important } }
 </style>
+<link rel="stylesheet" href="proposal-layout.css">
 </head>
 <body>
 
@@ -382,12 +383,12 @@ document.addEventListener("DOMContentLoaded", function(){
   </footer>
 </section>
 
-<div class="no-print export-actions" style="margin-top:12px">
-  <button id="btnPrintAll" class="btn" type="button">Imprimir proposta</button>
+<nav class="no-print export-actions" aria-label="Ações da proposta">
+  <button id="btnPrintAll" class="btn" type="button">Imprimir</button>
+  <button id="btnExportWord" class="btn" type="button">Gerar DOCX</button>
   <button id="btnExportPDF" class="btn" type="button">Gerar PDF</button>
-  <button id="btnExportWord" class="btn" type="button">Gerar Word</button>
   <span id="exportStatus" role="status" aria-live="polite"></span>
-</div>
+</nav>
 
 <div id="fretePop" class="frete-pop no-print" hidden>
   <div class="frete-pop__box">
@@ -455,7 +456,7 @@ function getProposalFileBaseName(){
   const MAX = 4;
   const dz=document.getElementById('drop'), input=document.getElementById('fileInput'), preview=document.getElementById('preview');
   if(!dz||!input||!preview) return; let images=[];
-  dz.querySelector('.pick').addEventListener('click', e=>{ e.preventDefault(); input.click(); });
+  dz.querySelector('.pick').addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); input.click(); });
   function render(){
     preview.innerHTML='';
     images.forEach((src,idx)=>{
@@ -474,7 +475,7 @@ function getProposalFileBaseName(){
       const r=new FileReader(); r.onload=e=>{ images.push(e.target.result); render(); }; r.readAsDataURL(f);
     });
   }
-  dz.addEventListener('click',()=>input.click());
+  dz.addEventListener('click',e=>{ if(e.target!==input) input.click(); });
   dz.addEventListener('dragover',e=>{ e.preventDefault(); });
   dz.addEventListener('drop',e=>{ e.preventDefault(); add(e.dataTransfer.files); });
   input.addEventListener('change',()=> add(input.files));
@@ -484,7 +485,7 @@ function getProposalFileBaseName(){
   const MAX = 4;
   const dz=document.getElementById('drop3'), input=document.getElementById('fileInput3'), preview=document.getElementById('preview3');
   if(!dz||!input||!preview) return; let images=[];
-  dz.querySelector('.pick3').addEventListener('click', e=>{ e.preventDefault(); input.click(); });
+  dz.querySelector('.pick3').addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); input.click(); });
   function render(){
     preview.innerHTML='';
     images.forEach((src,idx)=>{
@@ -503,7 +504,7 @@ function getProposalFileBaseName(){
       const r=new FileReader(); r.onload=e=>{ images.push(e.target.result); render(); }; r.readAsDataURL(f);
     });
   }
-  dz.addEventListener('click',()=>input.click());
+  dz.addEventListener('click',e=>{ if(e.target!==input) input.click(); });
   dz.addEventListener('dragover',e=>{ e.preventDefault(); });
   dz.addEventListener('drop',e=>{ e.preventDefault(); add(e.dataTransfer.files); });
   input.addEventListener('change',()=> add(input.files));
@@ -622,6 +623,7 @@ function loadWithFallback(img,list,i=0){
 <script>
 (function(){
   let isRebuilding=false, isEditing=false, t=null;
+  const mobileLayout=()=>matchMedia('(max-width: 899px)').matches && !document.body.classList.contains('proposal-export-layout') && !matchMedia('print').matches;
 
   function removeAutoPages(){
     document.querySelectorAll('.page-auto').forEach(p=>p.remove());
@@ -732,19 +734,20 @@ function loadWithFallback(img,list,i=0){
     }
   }
   function renumber(){
-    const all=[...document.querySelectorAll('.page, .page-auto')];
+    const all=[...document.querySelectorAll('body > .page')];
     const total=all.length;
     all.forEach((p,i)=>{ const spot=p.querySelector('.pageno'); if(spot) spot.textContent=`Página ${i+1} de ${total}`; });
   }
 
   /* ==== AJUSTE DINÂMICO DAS IMAGENS (págs. 2 e 3) ==== */
   function resizeAllPreviews(){
-    document.querySelectorAll('.page-2 .preview, .page-3 .preview').forEach(preview=>{
+    document.querySelectorAll('body > .page-2 .preview, body > .page-3 .preview').forEach(preview=>{
       const page = preview.closest('.page');
       if(!page) return;
       const cards = preview.querySelectorAll('.imgcard');
       const n = cards.length;
       if(!n) return;
+      if(mobileLayout()){ cards.forEach(card=>card.style.removeProperty('height')); return; }
 
       const rectPage = page.getBoundingClientRect();
       const rectPrev = preview.getBoundingClientRect();
@@ -787,6 +790,13 @@ function loadWithFallback(img,list,i=0){
     if(isEditing || window.vibazExportInProgress) return;
     isRebuilding=true;
     removeAutoPages();
+    if(mobileLayout()){
+      buildGuaranteeFromDescription();
+      renumber();
+      resizeAllPreviews();
+      isRebuilding=false;
+      return;
+    }
 
     /* Descrição (pág. 4) – 3 por página */
     paginateByCount('#pagina4','#itensLista','Descrição','sec-titulo-4',3,'itens auto-desc',(clone,source)=>{
@@ -848,12 +858,19 @@ function loadWithFallback(img,list,i=0){
   document.getElementById('editBox3')?.addEventListener('input', resizeAllPreviews);
 
   window.addEventListener('load', ()=>{ build(); resizeAllPreviews(); });
-  window.addEventListener('beforeprint', ()=>{ if(!isEditing){ build(); resizeAllPreviews(); } });
-  window.addEventListener('resize', ()=>{ if(!isEditing) resizeAllPreviews(); });
+  window.addEventListener('beforeprint', ()=>{ document.body.classList.add('proposal-export-layout'); isEditing=false; build(); resizeAllPreviews(); });
+  window.addEventListener('afterprint', ()=>{ document.body.classList.remove('proposal-export-layout'); build(); resizeAllPreviews(); });
+  window.addEventListener('resize', ()=>{ if(!isEditing && !window.vibazExportInProgress) schedule(); });
   document.addEventListener('images-changed', ()=>{ if(!isEditing && !isRebuilding){ schedule(); } });
   window.prepareProposalForExport = function(){
     clearTimeout(t);
     isEditing=false;
+    build();
+    resizeAllPreviews();
+  };
+  window.restoreProposalLayout = function(){
+    document.body.classList.remove('proposal-export-layout');
+    clearTimeout(t);
     build();
     resizeAllPreviews();
   };
